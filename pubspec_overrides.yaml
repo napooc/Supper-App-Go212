@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: feature_gofix
+dependency_overrides:
+  feature_gofix:
+    path: ..\\..\\packages\\features\\feature_gofix
