@@ -36,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // ─── TOP BAR ───
           SliverAppBar(
             expandedHeight: 0,
             floating: true,
@@ -75,8 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-
-          // ─── CONTENT ───
           SliverToBoxAdapter(
             child: AnimationLimiter(
               child: Column(
@@ -114,7 +111,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── GREETING ───
   Widget _buildGreeting(BuildContext context) {
     final h = DateTime.now().hour;
     final g = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
@@ -131,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── HERO CARD — Premium gradient with image ───
   Widget _buildHeroCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -172,7 +167,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── POPULAR SERVICES — Horizontal scroll image cards ───
   Widget _buildPopularRow(BuildContext context) {
     final items = [
       _PopService('GoWash', 'Dès 60 DH', 'assets/images/gowash_hero.png', '/service/gowash', const Color(0xFF06B6D4)),
@@ -192,7 +186,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── ALL SERVICES — 3×3 Image-based grid with real photos ───
   Widget _buildAllServices(BuildContext context) {
     final services = [
       _SvcData('GoRide', 'Scooter', Icons.electric_scooter, Go212Colors.primary600, 'assets/images/goride_hero.png', '/service/goride'),
@@ -205,7 +198,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _SvcData('GoShop', 'Shopping', Icons.shopping_bag_rounded, const Color(0xFF10B981), 'assets/images/gobike_hero.png', '/service/goshop'),
       _SvcData('GoSwap', 'Batterie', Icons.battery_charging_full_rounded, const Color(0xFF6366F1), 'assets/images/goride_hero.png', '/service/goswap'),
     ];
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GridView.builder(
@@ -220,7 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── ACTIVE ORDER ───
   Widget _buildActiveOrder(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -251,7 +242,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─── TRUST BAR ───
   Widget _buildTrustBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -275,7 +265,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _div() => Container(width: 1, height: 36, color: Colors.white.withOpacity(0.2));
 
-  // ─── SUPPORT ───
   Widget _buildSupportCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -287,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Icon(Iconsax.message_question, size: 22, color: Go212Colors.primary600)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Besoin d\'aide ?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Go212Colors.neutral800)),
+            Text("Besoin d'aide ?", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Go212Colors.neutral800)),
             Text('Support 7j/7 · 9h à 22h', style: TextStyle(fontSize: 12, color: Go212Colors.neutral500)),
           ])),
           Container(
@@ -312,9 +301,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// TOP BAR BUTTON
-// ═══════════════════════════════════════════════════════════════
 class _TopBtn extends StatelessWidget {
   final IconData icon;
   final int? badge;
@@ -342,9 +328,6 @@ class _TopBtn extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// GLASS CHIP & CTA
-// ═══════════════════════════════════════════════════════════════
 class _GlassChip extends StatelessWidget {
   final String text;
   const _GlassChip(this.text);
@@ -387,9 +370,6 @@ class _GlassCta extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// POPULAR CARD — Real image with gradient
-// ═══════════════════════════════════════════════════════════════
 class _PopularCard extends StatefulWidget {
   final _PopService item;
   const _PopularCard({required this.item});
@@ -445,9 +425,6 @@ class _PopularCardState extends State<_PopularCard> with SingleTickerProviderSta
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// SERVICE TILE — Image background with icon overlay
-// ═══════════════════════════════════════════════════════════════
 class _ServiceTile extends StatefulWidget {
   final _SvcData data;
   const _ServiceTile({required this.data});
@@ -481,9 +458,7 @@ class _ServiceTileState extends State<_ServiceTile> with SingleTickerProviderSta
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Image background
                 Image.asset(d.img, fit: BoxFit.cover),
-                // Gradient overlay matching service color
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -496,13 +471,11 @@ class _ServiceTileState extends State<_ServiceTile> with SingleTickerProviderSta
                     ),
                   ),
                 ),
-                // Content
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Icon circle
                       Container(
                         width: 34, height: 34,
                         decoration: BoxDecoration(
@@ -527,7 +500,6 @@ class _ServiceTileState extends State<_ServiceTile> with SingleTickerProviderSta
   }
 }
 
-// ─── Trust Column ───
 class _TrustCol extends StatelessWidget {
   final IconData icon; final String val; final String label;
   const _TrustCol(this.icon, this.val, this.label);
@@ -542,9 +514,6 @@ class _TrustCol extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════════════════════
 class _PopService {
   final String name, price, img, route;
   final Color accent;

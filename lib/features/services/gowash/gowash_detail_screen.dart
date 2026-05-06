@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import '../../../core/theme/go212_colors.dart';
 import '../../../core/theme/go212_shadows.dart';
 
@@ -27,12 +26,14 @@ class GoWashDetailScreen extends StatelessWidget {
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Container(
-                        width: 40, height: 40,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+                        child: const Icon(Icons.arrow_back_rounded,
+                            color: Colors.white, size: 20),
                       ),
                     ),
                   ),
@@ -46,12 +47,14 @@ class GoWashDetailScreen extends StatelessWidget {
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                         child: Container(
-                          width: 40, height: 40,
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.share_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.share_rounded,
+                              color: Colors.white, size: 20),
                         ),
                       ),
                     ),
@@ -61,7 +64,8 @@ class GoWashDetailScreen extends StatelessWidget {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.asset('assets/images/gowash_hero.png', fit: BoxFit.cover),
+                      Image.asset('assets/images/gowash.png',
+                          fit: BoxFit.cover),
                       // Gradient overlay
                       Container(
                         decoration: BoxDecoration(
@@ -88,24 +92,57 @@ class GoWashDetailScreen extends StatelessWidget {
                               // Glass badges row
                               Row(
                                 children: [
-                                  _GlassBadge(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    Icon(Icons.eco_rounded, size: 14, color: Go212Colors.primary300),
-                                    const SizedBox(width: 4),
-                                    Text('ÉCOLOGIQUE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
-                                  ])),
+                                  _GlassBadge(
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                        Icon(Icons.eco_rounded,
+                                            size: 14,
+                                            color: Go212Colors.primary300),
+                                        const SizedBox(width: 4),
+                                        Text('ÉCOLOGIQUE',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                letterSpacing: 0.5)),
+                                      ])),
                                   const SizedBox(width: 8),
-                                  _GlassBadge(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    Icon(Icons.star_rounded, size: 14, color: Colors.amber),
-                                    const SizedBox(width: 4),
-                                    Text('4.9', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
-                                    Text(' (2.1k)', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
-                                  ])),
+                                  _GlassBadge(
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                        Icon(Icons.star_rounded,
+                                            size: 14, color: Colors.amber),
+                                        const SizedBox(width: 4),
+                                        Text('4.9',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700)),
+                                        Text(' (2.1k)',
+                                            style: TextStyle(
+                                                color: Colors.white
+                                                    .withOpacity(0.7),
+                                                fontSize: 10)),
+                                      ])),
                                 ],
                               ),
                               const SizedBox(height: 14),
-                              Text('GoWash', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800, height: 1, letterSpacing: -0.5)),
+                              Text('GoWash',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w800,
+                                      height: 1,
+                                      letterSpacing: -0.5)),
                               const SizedBox(height: 6),
-                              Text('Lavage auto écologique à domicile.\nSans eau. Résultat impeccable.', style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14, height: 1.5)),
+                              Text(
+                                  'Lavage auto écologique à domicile.\nSans eau. Résultat impeccable.',
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(0.85),
+                                      fontSize: 14,
+                                      height: 1.5)),
                             ],
                           ),
                         ),
@@ -122,7 +159,9 @@ class GoWashDetailScreen extends StatelessWidget {
 
           // ─── STICKY CTA ───
           Positioned(
-            left: 0, right: 0, bottom: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
               decoration: BoxDecoration(
@@ -135,11 +174,28 @@ class GoWashDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('À partir de', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Go212Colors.neutral500)),
-                      Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                        Text('60', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Go212Colors.primary600, height: 1)),
-                        Padding(padding: const EdgeInsets.only(bottom: 2), child: Text(' DH', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Go212Colors.primary600))),
-                      ]),
+                      Text('À partir de',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(color: Go212Colors.neutral500)),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('60',
+                                style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
+                                    color: Go212Colors.primary600,
+                                    height: 1)),
+                            Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Text(' DH',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Go212Colors.primary600))),
+                          ]),
                     ],
                   ),
                   const SizedBox(width: 20),
@@ -147,18 +203,25 @@ class GoWashDetailScreen extends StatelessWidget {
                     child: SizedBox(
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(context, '/booking/gowash'),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/booking/gowash'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Go212Colors.primary600,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
                         ),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Text('Réserver', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                          const SizedBox(width: 8),
-                          Icon(Icons.arrow_forward_rounded, size: 20),
-                        ]),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Réserver',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                              const SizedBox(width: 8),
+                              Icon(Icons.arrow_forward_rounded, size: 20),
+                            ]),
                       ),
                     ),
                   ),
@@ -178,7 +241,9 @@ class GoWashDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ─── FORMULAS ───
-          Text('Nos formules', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
+          Text('Nos formules',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
           const SizedBox(height: 16),
           _FormulaCard(
             name: 'Essentiel',
@@ -191,7 +256,12 @@ class GoWashDetailScreen extends StatelessWidget {
           _FormulaCard(
             name: 'Extra',
             price: '110',
-            features: ['Formule Essentiel +', 'Aspiration intérieur', 'Tableau de bord', 'Traitement cuir'],
+            features: [
+              'Formule Essentiel +',
+              'Aspiration intérieur',
+              'Tableau de bord',
+              'Traitement cuir'
+            ],
             color: Go212Colors.primary600,
             isPopular: true,
           ),
@@ -199,7 +269,12 @@ class GoWashDetailScreen extends StatelessWidget {
           _FormulaCard(
             name: 'Premium',
             price: '150',
-            features: ['Formule Extra +', 'Shampooing sièges', 'Désodorisant', 'Protection carrosserie'],
+            features: [
+              'Formule Extra +',
+              'Shampooing sièges',
+              'Désodorisant',
+              'Protection carrosserie'
+            ],
             color: Go212Colors.primary700,
             isPopular: false,
           ),
@@ -207,28 +282,39 @@ class GoWashDetailScreen extends StatelessWidget {
           const SizedBox(height: 32),
 
           // ─── HOW IT WORKS ───
-          Text('Comment ça marche', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
+          Text('Comment ça marche',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
           const SizedBox(height: 16),
-          _HowItWorksStep(1, 'Choisissez', 'Sélectionnez votre formule et véhicule', Icons.touch_app_rounded),
-          _HowItWorksStep(2, 'Planifiez', 'Choisissez date, heure et adresse', Icons.schedule_rounded),
-          _HowItWorksStep(3, 'Confirmez', 'Payez en ligne ou en cash', Icons.payment_rounded),
-          _HowItWorksStep(4, 'Profitez', 'Notre équipe arrive chez vous', Icons.local_car_wash_rounded),
+          _HowItWorksStep(
+              1,
+              'Choisissez',
+              'Sélectionnez votre formule et véhicule',
+              Icons.touch_app_rounded),
+          _HowItWorksStep(2, 'Planifiez', 'Choisissez date, heure et adresse',
+              Icons.schedule_rounded),
+          _HowItWorksStep(3, 'Confirmez', 'Payez en ligne ou en cash',
+              Icons.payment_rounded),
+          _HowItWorksStep(4, 'Profitez', 'Notre équipe arrive chez vous',
+              Icons.local_car_wash_rounded),
 
           const SizedBox(height: 32),
 
           // ─── GALLERY ───
-          Text('Résultats', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
+          Text('Résultats',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
           const SizedBox(height: 16),
           SizedBox(
             height: 160,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                _GalleryCard('assets/images/gowash_hero.png'),
+                _GalleryCard('assets/images/gowash.png'),
                 const SizedBox(width: 12),
-                _GalleryCard('assets/images/goride_hero.png'),
+                _GalleryCard('assets/images/goride.png'),
                 const SizedBox(width: 12),
-                _GalleryCard('assets/images/goclean_hero.png'),
+                _GalleryCard('assets/images/gowash.png'),
               ],
             ),
           ),
@@ -248,12 +334,14 @@ class GoWashDetailScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                  _TrustItem(Icons.eco_rounded, 'Sans eau'),
-                  _TrustItem(Icons.access_time_rounded, '45 min'),
-                  _TrustItem(Icons.shield_rounded, 'Assuré'),
-                  _TrustItem(Icons.star_rounded, '4.9/5'),
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _TrustItem(Icons.eco_rounded, 'Sans eau'),
+                      _TrustItem(Icons.access_time_rounded, '45 min'),
+                      _TrustItem(Icons.shield_rounded, 'Assuré'),
+                      _TrustItem(Icons.star_rounded, '4.9/5'),
+                    ]),
               ],
             ),
           ),
@@ -261,11 +349,16 @@ class GoWashDetailScreen extends StatelessWidget {
           const SizedBox(height: 32),
 
           // FAQ
-          Text('Questions fréquentes', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
+          Text('Questions fréquentes',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
           const SizedBox(height: 16),
-          _FaqItem('Comment fonctionne le lavage sans eau ?', 'Nous utilisons des produits biodégradables haute performance qui nettoient et protègent votre carrosserie sans aucune goutte d\'eau.'),
-          _FaqItem('Combien de temps dure le lavage ?', 'En moyenne 45 minutes pour la formule Essentiel, 1h pour Extra et 1h30 pour Premium.'),
-          _FaqItem('Quelles zones couvrez-vous ?', 'Nous couvrons toute la zone urbaine de Casablanca et ses environs.'),
+          _FaqItem('Comment fonctionne le lavage sans eau ?',
+              'Nous utilisons des produits biodégradables haute performance qui nettoient et protègent votre carrosserie sans aucune goutte d\'eau.'),
+          _FaqItem('Combien de temps dure le lavage ?',
+              'En moyenne 45 minutes pour la formule Essentiel, 1h pour Extra et 1h30 pour Premium.'),
+          _FaqItem('Quelles zones couvrez-vous ?',
+              'Nous couvrons toute la zone urbaine de Casablanca et ses environs.'),
         ],
       ),
     );
@@ -323,43 +416,82 @@ class _FormulaCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isPopular ? color.withOpacity(0.06) : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isPopular ? color : Go212Colors.neutral200, width: isPopular ? 2 : 1),
-        boxShadow: isPopular ? [BoxShadow(color: color.withOpacity(0.15), blurRadius: 20, offset: const Offset(0, 8))] : Go212Shadows.elevation1,
+        border: Border.all(
+            color: isPopular ? color : Go212Colors.neutral200,
+            width: isPopular ? 2 : 1),
+        boxShadow: isPopular
+            ? [
+                BoxShadow(
+                    color: color.withOpacity(0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8))
+              ]
+            : Go212Shadows.elevation1,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: Go212Colors.neutral800)),
+              Text(name,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: Go212Colors.neutral800)),
               if (isPopular) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)),
-                  child: Text('★ Populaire', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                      color: color, borderRadius: BorderRadius.circular(6)),
+                  child: Text('★ Populaire',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700)),
                 ),
               ],
               const Spacer(),
               Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text(price, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: color, height: 1)),
-                Padding(padding: const EdgeInsets.only(bottom: 2), child: Text(' DH', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color))),
+                Text(price,
+                    style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: color,
+                        height: 1)),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Text(' DH',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: color))),
               ]),
             ],
           ),
           const SizedBox(height: 12),
           ...features.map((f) => Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Row(children: [
-              Container(
-                width: 20, height: 20,
-                decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
-                child: Icon(Icons.check_rounded, size: 14, color: color),
-              ),
-              const SizedBox(width: 10),
-              Expanded(child: Text(f, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Go212Colors.neutral600, fontWeight: FontWeight.w500))),
-            ]),
-          )),
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6)),
+                    child: Icon(Icons.check_rounded, size: 14, color: color),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: Text(f,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(
+                                  color: Go212Colors.neutral600,
+                                  fontWeight: FontWeight.w500))),
+                ]),
+              )),
         ],
       ),
     );
@@ -386,22 +518,44 @@ class _HowItWorksStep extends StatelessWidget {
             alignment: Alignment.bottomRight,
             children: [
               Container(
-                width: 50, height: 50,
-                decoration: BoxDecoration(color: Go212Colors.primary50, borderRadius: BorderRadius.circular(14)),
-                child: Center(child: Text('$number', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Go212Colors.primary600))),
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                    color: Go212Colors.primary50,
+                    borderRadius: BorderRadius.circular(14)),
+                child: Center(
+                    child: Text('$number',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Go212Colors.primary600))),
               ),
               Container(
-                width: 22, height: 22,
-                decoration: BoxDecoration(color: Go212Colors.primary600, borderRadius: BorderRadius.circular(7), border: Border.all(color: Colors.white, width: 2)),
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                    color: Go212Colors.primary600,
+                    borderRadius: BorderRadius.circular(7),
+                    border: Border.all(color: Colors.white, width: 2)),
                 child: Icon(icon, size: 12, color: Colors.white),
               ),
             ],
           ),
           const SizedBox(width: 14),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: Go212Colors.neutral800)),
-            Text(subtitle, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Go212Colors.neutral500)),
-          ])),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(title,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Go212Colors.neutral800)),
+                Text(subtitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: Go212Colors.neutral500)),
+              ])),
         ],
       ),
     );
@@ -443,12 +597,17 @@ class _TrustItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       Container(
-        width: 44, height: 44,
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12)),
         child: Icon(icon, color: Colors.white, size: 22),
       ),
       const SizedBox(height: 6),
-      Text(label, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+      Text(label,
+          style: TextStyle(
+              color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
     ]);
   }
 }
@@ -480,26 +639,38 @@ class _FaqItemState extends State<_FaqItem> {
           decoration: BoxDecoration(
             color: _expanded ? Go212Colors.primary50 : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _expanded ? Go212Colors.primary300 : Go212Colors.neutral200),
+            border: Border.all(
+                color: _expanded
+                    ? Go212Colors.primary300
+                    : Go212Colors.neutral200),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [
-                Expanded(child: Text(widget.question, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: Go212Colors.neutral800))),
+                Expanded(
+                    child: Text(widget.question,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Go212Colors.neutral800))),
                 AnimatedRotation(
                   turns: _expanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 300),
-                  child: Icon(Icons.keyboard_arrow_down_rounded, size: 22, color: Go212Colors.neutral500),
+                  child: Icon(Icons.keyboard_arrow_down_rounded,
+                      size: 22, color: Go212Colors.neutral500),
                 ),
               ]),
               AnimatedCrossFade(
                 firstChild: const SizedBox.shrink(),
                 secondChild: Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(widget.answer, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Go212Colors.neutral600, height: 1.5)),
+                  child: Text(widget.answer,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Go212Colors.neutral600, height: 1.5)),
                 ),
-                crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                crossFadeState: _expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 300),
               ),
             ],

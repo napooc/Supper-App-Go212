@@ -7,11 +7,27 @@ import 'features/auth/welcome_screen.dart';
 import 'features/auth/phone_entry_screen.dart';
 import 'features/auth/otp_screen.dart';
 import 'features/services/gowash/gowash_detail_screen.dart';
-import 'features/services/goride/goride_detail_screen.dart';
 import 'features/booking/gowash_booking_screen.dart';
 import 'features/booking/payment_screen.dart';
 import 'features/booking/success_screen.dart';
 import 'app/main_shell.dart';
+import 'features/goride/kyc/kyc_cin_screen.dart';
+import 'features/goride/kyc/kyc_scan_screen.dart';
+import 'features/goride/kyc/kyc_selfie_screen.dart';
+import 'features/goride/kyc/kyc_verify_screen.dart';
+import 'features/goride/kyc/kyc_success_screen.dart';
+import 'features/goride/transition/goride_transition_screen.dart';
+import 'features/goride/booking/goride_persons_screen.dart';
+import 'features/goride/booking/goride_duration_screen.dart';
+import 'features/goride/booking/goride_details_screen.dart';
+import 'features/goride/booking/goride_delivery_screen.dart';
+import 'features/goride/booking/goride_summary_screen.dart';
+import 'features/goride/booking/goride_payment_screen.dart';
+import 'features/goride/booking/goride_confirm_screen.dart';
+import 'features/goride/booking/goride_tracking_screen.dart';
+import 'features/goride/booking/goride_agence_screen.dart';
+import 'features/goride/booking/goride_review_screen.dart';
+import 'features/goride/booking/goride_thankyou_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,162 +55,115 @@ class Go212App extends StatelessWidget {
       theme: Go212Theme.light(),
       initialRoute: '/',
       onGenerateRoute: (settings) {
-        Widget page;
         switch (settings.name) {
           case '/':
-            page = const SplashScreen();
-            break;
+            return MaterialPageRoute(builder: (_) => const SplashScreen());
           case '/onboarding':
-            page = const OnboardingScreen();
-            break;
+            return MaterialPageRoute(builder: (_) => const OnboardingScreen());
           case '/welcome':
-            page = const WelcomeScreen();
-            break;
+            return MaterialPageRoute(builder: (_) => const WelcomeScreen());
           case '/signup':
-            page = const PhoneEntryScreen(isSignUp: true);
-            break;
+            return MaterialPageRoute(
+                builder: (_) => const PhoneEntryScreen(isSignUp: true));
           case '/login':
-            page = const PhoneEntryScreen(isSignUp: false);
-            break;
+            return MaterialPageRoute(
+                builder: (_) => const PhoneEntryScreen(isSignUp: false));
           case '/otp':
-            page = const OtpScreen();
-            break;
+            return MaterialPageRoute(builder: (_) => const OtpScreen());
           case '/main':
-            page = const MainShell();
-            break;
+            return MaterialPageRoute(builder: (_) => const MainShell());
           case '/service/gowash':
-            page = const GoWashDetailScreen();
-            break;
+            return MaterialPageRoute(
+                builder: (_) => const GoWashDetailScreen());
           case '/service/goride':
-            page = const GoRideDetailScreen();
-            break;
+            return MaterialPageRoute(
+                builder: (_) => const GoRideKycCinScreen());
           case '/booking/gowash':
-            page = const GoWashBookingScreen();
-            break;
+            return MaterialPageRoute(
+                builder: (_) => const GoWashBookingScreen());
           case '/payment':
-            page = const PaymentScreen();
-            break;
+            return MaterialPageRoute(builder: (_) => const PaymentScreen());
           case '/success':
-            page = const SuccessScreen();
-            break;
+            return MaterialPageRoute(builder: (_) => const SuccessScreen());
+          // ── GoRide ──────────────────────────────────────
+          case '/goride/kyc/cin':
+            return MaterialPageRoute(
+                builder: (_) => const GoRideKycCinScreen());
+          case '/goride/kyc/scan':
+            return MaterialPageRoute(
+                builder: (_) => const GoRideKycScanScreen());
+          case '/goride/kyc/selfie':
+            return MaterialPageRoute(
+                builder: (_) => const GoRideKycSelfieScreen());
+          case '/goride/kyc/verify':
+            return MaterialPageRoute(
+                builder: (_) => const GoRideKycVerifyScreen());
+          case '/goride/kyc/success':
+            return MaterialPageRoute(
+                builder: (_) => const GoRideKycSuccessScreen());
+          case '/goride/transition':
+            return MaterialPageRoute(
+                builder: (_) => const GoRideTransitionScreen());
+          case '/goride/booking/persons':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRidePersonsScreen());
+          case '/goride/booking/duration':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideDurationScreen());
+          case '/goride/booking/details':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideDetailsScreen());
+          case '/goride/booking/delivery':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideDeliveryScreen());
+          case '/goride/booking/summary':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideSummaryScreen());
+          case '/goride/booking/payment':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRidePaymentScreen());
+          case '/goride/booking/confirm':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideConfirmScreen());
+          case '/goride/tracking':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideTrackingScreen());
+          case '/goride/agence':
+          case '/goride/booking/agence':
+            return MaterialPageRoute(
+                settings: settings, builder: (_) => const GoRideAgenceScreen());
+          case '/goride/review':
+            return MaterialPageRoute(
+                settings: settings, builder: (_) => const GoRideReviewScreen());
+          case '/goride/thankyou':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoRideThankYouScreen());
           default:
-            // For unimplemented service routes, show a placeholder
-            page = _PlaceholderScreen(routeName: settings.name ?? 'Unknown');
-            break;
+            return MaterialPageRoute(
+                builder: (_) => const _PlaceholderScreen());
         }
-
-        return PageRouteBuilder(
-          settings: settings,
-          pageBuilder: (_, __, ___) => page,
-          transitionsBuilder: (_, animation, __, child) {
-            if (settings.name == '/' || settings.name == '/main') {
-              return FadeTransition(opacity: animation, child: child);
-            }
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              )),
-              child: child,
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 350),
-        );
       },
     );
   }
 }
 
 class _PlaceholderScreen extends StatelessWidget {
-  final String routeName;
-  const _PlaceholderScreen({required this.routeName});
+  const _PlaceholderScreen();
 
   @override
   Widget build(BuildContext context) {
-    // Extract service name from route
-    final serviceName = routeName.split('/').last;
-    final displayName = serviceName.isNotEmpty
-        ? serviceName[0].toUpperCase() + serviceName.substring(1)
-        : 'Service';
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.arrow_back_rounded, size: 20),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          displayName,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80, height: 80,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: const Icon(
-                  Icons.construction_rounded,
-                  size: 36,
-                  color: Color(0xFF16A34A),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                displayName,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Cette page sera bientôt disponible.\nRestez connecté !',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF64748B),
-                      height: 1.5,
-                    ),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF16A34A),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
-                  child: const Text('Retour', style: TextStyle(fontWeight: FontWeight.w600)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: AppBar(title: const Text('GO212')),
+      body: const Center(child: Text('Page en construction')),
     );
   }
 }
