@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'gowash_header.dart';
+import '../../../core/theme/go212_colors.dart';
 import 'gowash_detail_screen.dart';
 
 // ═══════════════════════════════════════════════════════════════
@@ -64,7 +66,7 @@ class _BrandSelectionScreenState extends State<BrandSelectionScreen>
   late AnimationController _btnCtrl;
   late Animation<double> _btnScale;
 
-  static const _green = Color(0xFF059669);
+  static const _green = Go212Colors.primary500;
 
   @override
   void initState() {
@@ -122,16 +124,19 @@ class _BrandSelectionScreenState extends State<BrandSelectionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFB),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildSearchBar(),
-            Expanded(child: _buildBrandGrid()),
-            _buildCTA(),
-          ],
-        ),
+      backgroundColor: Go212Colors.surfacePage,
+      body: Column(
+        children: [
+          GoWashHeader(
+            title: 'Marque du véhicule',
+            subtitle: 'Quelle est la marque de votre ${widget.vehicleName} ?',
+            stepText: '2/4',
+            onBack: () => Navigator.pop(context),
+          ),
+          _buildSearchBar(),
+          Expanded(child: _buildBrandGrid()),
+          _buildCTA(),
+        ],
       ),
     );
   }
@@ -376,7 +381,7 @@ class _BrandSelectionScreenState extends State<BrandSelectionScreen>
               decoration: BoxDecoration(
                 gradient: enabled
                     ? const LinearGradient(
-                        colors: [Color(0xFF059669), Color(0xFF047857)])
+                        colors: [Color(0xFF179B2E), Color(0xFF0D5D1F)])
                     : LinearGradient(colors: [
                         Colors.grey.shade300,
                         Colors.grey.shade300,
@@ -445,8 +450,8 @@ class _BrandCardState extends State<_BrandCard>
   late AnimationController _ctrl;
   late Animation<double> _scale;
 
-  static const _green = Color(0xFF059669);
-  static const _green50 = Color(0xFFECFDF5);
+  static const _green = Color(0xFF179B2E); // GoWash Official Green
+  static const _green50 = Color(0xFFE8F6EA);
 
   @override
   void initState() {
@@ -617,7 +622,7 @@ class _InfoBadge extends StatelessWidget {
   final String label;
   const _InfoBadge({required this.icon, required this.label});
 
-  static const _green = Color(0xFF059669);
+  static const _green = Color(0xFF179B2E); // GoWash Official Green
 
   @override
   Widget build(BuildContext context) {
@@ -656,7 +661,7 @@ class _StepIndicator extends StatelessWidget {
   final int total;
   const _StepIndicator({required this.current, required this.total});
 
-  static const _green = Color(0xFF059669);
+  static const _green = Color(0xFF179B2E); // GoWash Official Green
 
   @override
   Widget build(BuildContext context) {

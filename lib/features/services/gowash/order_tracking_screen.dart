@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'gowash_header.dart';
+import 'soap_bubbles_overlay.dart';
 
 enum TrackingStatus {
   waiting,
@@ -29,7 +31,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   double _progress = 1.0; // 1.0 = dirty, 0.0 = clean
   Timer? _timer;
 
-  static const _green = Color(0xFF059669);
+  static const _green = Go212Colors.primary500;
   static const _bgGrey = Color(0xFFF5F5F5);
 
   @override
@@ -76,28 +78,34 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgGrey,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Suivi de commande',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 18),
-        ),
-      ),
+      backgroundColor: Go212Colors.surfacePage,
       body: Column(
         children: [
-          // Animation Section
-          Expanded(
-            flex: 3,
-            child: _buildAnimationArea(),
+          GoWashHeader(
+            title: 'Suivi de commande',
+            onBack: () => Navigator.pop(context),
           ),
-          
-          // Status Section
           Expanded(
-            flex: 4,
-            child: _buildStatusArea(),
+            child: Stack(
+              children: [
+                const SoapBubblesOverlay(),
+                Column(
+                  children: [
+                    // Animation Section
+                    Expanded(
+                      flex: 3,
+                      child: _buildAnimationArea(),
+                    ),
+                    
+                    // Status Section
+                    Expanded(
+                      flex: 4,
+                      child: _buildStatusArea(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -111,12 +119,12 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
     return Container(
       width: double.infinity,
-      color: Colors.white,
+      color: Colors.transparent,
       child: Stack(
         alignment: Alignment.center,
         children: [
           // Clean Image (Bottom)
-          _buildVehicleImage(cleanPath, Colors.white),
+          _buildVehicleImage(cleanPath, Colors.transparent),
           
           // Dirty Image (Top) with Opacity
           Opacity(
@@ -238,14 +246,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: isDone ? _green : (isActive ? _green.withOpacity(0.2) : Colors.grey.shade200),
+                  color: isDone ? _green : (isActive ? _green.withOpacity(0.2) : Go212Colors.neutral300),
                   shape: BoxShape.circle,
                   border: isActive ? Border.all(color: _green, width: 2) : null,
                 ),
                 child: isDone ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
               ),
               if (stepStatus != TrackingStatus.ready)
-                Container(width: 2, height: 20, color: isDone ? _green : Colors.grey.shade200),
+                Container(width: 2, height: 20, color: isDone ? _green : Go212Colors.neutral200),
             ],
           ),
           const SizedBox(width: 16),

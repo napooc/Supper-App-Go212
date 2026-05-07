@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'gowash_header.dart';
+import '../../../core/theme/go212_colors.dart';
 
 class CompletionScreen extends StatefulWidget {
   const CompletionScreen({super.key});
@@ -9,101 +11,184 @@ class CompletionScreen extends StatefulWidget {
 }
 
 class _CompletionScreenState extends State<CompletionScreen> {
-  late VideoPlayerController _controller;
-  bool _isInitialized = false;
-
-  static const _green = Color(0xFF059669);
-  static const _darkBlue = Color(0xFF1E293B);
-
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/animations/lion_byebye.mp4')
-      ..initialize().then((_) {
-        setState(() => _isInitialized = true);
-        _controller.setLooping(true);
-        _controller.play();
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+    // Auto-redirection after 5 seconds
+    Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 1. Full-Width Video with Natural Aspect Ratio
-              _isInitialized
-                  ? SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: VideoPlayer(_controller),
-                      ),
-                    )
-                  : const SizedBox(
-                      height: 300,
-                      child: Center(child: CircularProgressIndicator(color: _green)),
-                    ),
-
-              const SizedBox(height: 50),
-
-              // 2. Final Message
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Text(
-                  'Merci de votre confiance,\nà bientôt !',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: _darkBlue,
-                    height: 1.3,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // 3. Action Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 58,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _green,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Retour à l\'accueil',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 50), // Balance bottom spacing
-            ],
+      backgroundColor: Go212Colors.surfacePage,
+      body: Column(
+        children: [
+          const GoWashHeader(
+            title: 'Terminé !',
+            subtitle: 'Lavage complété avec succès',
+            onBack: null,
           ),
-        ),
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Celebration badge — above the logo circle
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Go212Colors.primary500.withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: Go212Colors.primary500.withOpacity(0.2),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('🎉', style: TextStyle(fontSize: 15)),
+                          SizedBox(width: 6),
+                          Text(
+                            'Excellent travail !',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Go212Colors.primary500,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          Text('🎉', style: TextStyle(fontSize: 15)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Success Circle with official logo
+                    Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Go212Colors.primary500,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Go212Colors.primary500.withOpacity(0.3),
+                            blurRadius: 40,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/logo_go_wash.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.check_circle_rounded,
+                            color: Colors.white,
+                            size: 80,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+
+                    // Success Icon Badge
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Go212Colors.primary500,
+                      ),
+                      child: const Icon(Icons.check_rounded, color: Colors.white, size: 32),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Main Messages
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Merci pour votre avis ',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: Go212Colors.neutral800,
+                          ),
+                        ),
+                        // Native emoji — no color override
+                        Text('🙏', style: TextStyle(fontSize: 24)),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Votre retour nous aide à améliorer notre service.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Go212Colors.neutral500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Status Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Go212Colors.primary500.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: Go212Colors.primary500.withOpacity(0.2)),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star_rounded, color: Go212Colors.primary500, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'Évaluation soumise',
+                            style: TextStyle(
+                              color: Go212Colors.primary500,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 60),
+
+                    // Redirection Text
+                    const Text(
+                      'Redirection vers l\'accueil dans quelques secondes...',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Go212Colors.neutral400,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

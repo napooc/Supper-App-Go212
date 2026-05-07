@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFB),
+      backgroundColor: Go212Colors.surfacePage,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFF059669), Color(0xFF047857)]),
+                    gradient: Go212Colors.splashGradient,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(child: Text('GO', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Colors.white, height: 1))),
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 190,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [BoxShadow(color: const Color(0xFF059669).withOpacity(0.25), blurRadius: 24, offset: const Offset(0, 10))],
+            boxShadow: [BoxShadow(color: Go212Colors.primary500.withOpacity(0.25), blurRadius: 24, offset: const Offset(0, 10))],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
@@ -179,10 +179,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // ─── POPULAR SERVICES — Horizontal scroll image cards ───
   Widget _buildPopularRow(BuildContext context) {
     final items = [
-      _PopService('GoWash', 'Dès 60 DH', 'assets/images/gowash_hero.png', '/service/gowash', const Color(0xFF06B6D4)),
-      _PopService('GoClean', 'Dès 150 DH', 'assets/images/goclean_hero.png', '/service/goclean', const Color(0xFF8B5CF6)),
-      _PopService('GoFix', 'Devis gratuit', 'assets/images/gofix_hero.png', '/service/gofix', const Color(0xFFF59E0B)),
-      _PopService('GoBike', '30 DH/h', 'assets/images/gobike_hero.png', '/service/gobike', const Color(0xFF0EA5E9)),
+      _PopService('GoWash', 'Dès 60 DH', 'assets/images/gowash_hero.png', '/service/gowash', Go212Colors.primary500),
+      _PopService('GoClean', 'Dès 150 DH', 'assets/images/goclean_hero.png', '/service/goclean', Go212Colors.primary500),
+      _PopService('GoFix', 'Devis gratuit', 'assets/images/gofix_hero.png', '/service/gofix', Go212Colors.primary500),
+      _PopService('GoBike', '30 DH/h', 'assets/images/gobike_hero.png', '/service/gobike', Go212Colors.primary500),
     ];
     return SizedBox(
       height: 170,
@@ -199,15 +199,15 @@ class _HomeScreenState extends State<HomeScreen> {
   // ─── ALL SERVICES — 3×3 Image-based grid with real photos ───
   Widget _buildAllServices(BuildContext context) {
     final services = [
-      _SvcData('GoRide', 'Scooter', Icons.electric_scooter, Go212Colors.primary600, 'assets/images/goride_hero.png', '/service/goride'),
-      _SvcData('GoWash', 'Lavage', Icons.water_drop_rounded, const Color(0xFF06B6D4), 'assets/images/gowash_hero.png', '/service/gowash'),
-      _SvcData('GoClean', 'Ménage', Icons.cleaning_services_rounded, const Color(0xFF8B5CF6), 'assets/images/goclean_hero.png', '/service/goclean'),
-      _SvcData('GoFix', 'Réparation', Icons.build_rounded, const Color(0xFFF59E0B), 'assets/images/gofix_hero.png', '/service/gofix'),
-      _SvcData('GoBike', 'Vélo', Icons.pedal_bike_rounded, const Color(0xFF0EA5E9), 'assets/images/gobike_hero.png', '/service/gobike'),
-      _SvcData('GoPrint', 'Impression', Icons.print_rounded, const Color(0xFFEC4899), 'assets/images/goride_hero.png', '/service/goprint'),
-      _SvcData('GoEvent', 'Events', Icons.celebration_rounded, const Color(0xFFF43F5E), 'assets/images/goclean_hero.png', '/service/goevent'),
-      _SvcData('GoShop', 'Shopping', Icons.shopping_bag_rounded, const Color(0xFF10B981), 'assets/images/gobike_hero.png', '/service/goshop'),
-      _SvcData('GoSwap', 'Batterie', Icons.battery_charging_full_rounded, const Color(0xFF6366F1), 'assets/images/goride_hero.png', '/service/goswap'),
+      _SvcData('GoRide', 'Scooter', Icons.electric_scooter, Go212Colors.primary500, 'assets/images/goride_hero.png', '/service/goride'),
+      _SvcData('GoWash', 'Lavage', Icons.water_drop_rounded, Go212Colors.primary500, 'assets/images/gowash_hero.png', '/service/gowash'),
+      _SvcData('GoClean', 'Ménage', Icons.cleaning_services_rounded, Go212Colors.primary500, 'assets/images/goclean_hero.png', '/service/goclean'),
+      _SvcData('GoFix', 'Réparation', Icons.build_rounded, Go212Colors.primary500, 'assets/images/gofix_hero.png', '/service/gofix'),
+      _SvcData('GoBike', 'Vélo', Icons.pedal_bike_rounded, Go212Colors.primary500, 'assets/images/gobike_hero.png', '/service/gobike'),
+      _SvcData('GoPrint', 'Impression', Icons.print_rounded, Go212Colors.primary500, 'assets/images/goride_hero.png', '/service/goprint'),
+      _SvcData('GoEvent', 'Events', Icons.celebration_rounded, Go212Colors.primary500, 'assets/images/goclean_hero.png', '/service/goevent'),
+      _SvcData('GoShop', 'Shopping', Icons.shopping_bag_rounded, Go212Colors.primary500, 'assets/images/gobike_hero.png', '/service/goshop'),
+      _SvcData('GoSwap', 'Batterie', Icons.battery_charging_full_rounded, Go212Colors.primary500, 'assets/images/goride_hero.png', '/service/goswap'),
     ];
 
     return Padding(
@@ -271,9 +271,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [Color(0xFF059669), Color(0xFF047857)]),
+          gradient: Go212Colors.heroGradient,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: const Color(0xFF059669).withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8))],
+          boxShadow: [BoxShadow(color: Go212Colors.primary500.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8))],
         ),
         child: Row(children: [
           _TrustCol(Icons.people_rounded, '5,000+', 'Utilisateurs'),

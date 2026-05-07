@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'gowash_header.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../core/theme/go212_colors.dart';
 import '../../../core/theme/go212_shadows.dart';
@@ -17,101 +18,10 @@ class GoWashDetailScreen extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             slivers: [
               // ─── HERO with real image ───
-              SliverAppBar(
-                expandedHeight: 340,
-                pinned: true,
-                backgroundColor: Go212Colors.primary700,
-                leading: IconButton(
-                  icon: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        width: 40, height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          width: 40, height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.share_rounded, color: Colors.white, size: 20),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset('assets/images/gowash_hero.png', fit: BoxFit.cover),
-                      // Gradient overlay
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.3),
-                              Colors.black.withOpacity(0.75),
-                            ],
-                            stops: const [0.0, 0.5, 1.0],
-                          ),
-                        ),
-                      ),
-                      // Content overlay
-                      SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 60, 20, 24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Glass badges row
-                              Row(
-                                children: [
-                                  _GlassBadge(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    Icon(Icons.eco_rounded, size: 14, color: Go212Colors.primary300),
-                                    const SizedBox(width: 4),
-                                    Text('ÉCOLOGIQUE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
-                                  ])),
-                                  const SizedBox(width: 8),
-                                  _GlassBadge(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    Icon(Icons.star_rounded, size: 14, color: Colors.amber),
-                                    const SizedBox(width: 4),
-                                    Text('4.9', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
-                                    Text(' (2.1k)', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
-                                  ])),
-                                ],
-                              ),
-                              const SizedBox(height: 14),
-                              Text('GoWash', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800, height: 1, letterSpacing: -0.5)),
-                              const SizedBox(height: 6),
-                              Text('Lavage auto écologique à domicile.\nSans eau. Résultat impeccable.', style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14, height: 1.5)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              SliverToBoxAdapter(
+                child: GoWashHeader(
+                  title: 'Lavage Auto',
+                  onBack: () => Navigator.pop(context),
                 ),
               ),
 

@@ -30,27 +30,6 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 20, offset: const Offset(0, -4))],
-        ),
-        child: SafeArea(
-          child: Container(
-            height: 60,
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              children: [
-                _NavItem(icon: Iconsax.home_2, activeIcon: Iconsax.home_2, label: 'Accueil', isActive: _currentIndex == 0, onTap: () => setState(() => _currentIndex = 0)),
-                _NavItem(icon: Iconsax.search_normal, activeIcon: Iconsax.search_normal_1, label: 'Explorer', isActive: _currentIndex == 1, onTap: () => setState(() => _currentIndex = 1)),
-                _NavItem(icon: Iconsax.document_text, activeIcon: Iconsax.document_text_1, label: 'Ordres', isActive: _currentIndex == 2, onTap: () => setState(() => _currentIndex = 2)),
-                _NavItem(icon: Iconsax.notification, activeIcon: Iconsax.notification, label: 'Notifs', isActive: _currentIndex == 3, badge: 2, onTap: () => setState(() => _currentIndex = 3)),
-                _NavItem(icon: Iconsax.user, activeIcon: Iconsax.user, label: 'Profil', isActive: _currentIndex == 4, onTap: () => setState(() => _currentIndex = 4)),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
