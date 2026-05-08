@@ -12,9 +12,29 @@ import 'features/booking/gowash_booking_screen.dart';
 import 'features/booking/payment_screen.dart';
 import 'features/booking/success_screen.dart';
 import 'app/main_shell.dart';
+import 'features/services/gobike/gobike_intro_screen.dart';
+import 'features/services/gobike/gobike_services_screen.dart';
+import 'features/services/gobike/gobike_rental_form_screen.dart';
+import 'features/services/gobike/gobike_duration_screen.dart';
+import 'features/services/gobike/gobike_packs_screen.dart';
+import 'features/services/gobike/gobike_group_reservation_screen.dart';
+import 'features/services/gobike/gobike_customize_screen.dart';
+import 'features/services/gobike/gobike_loading_screen.dart';
+import 'features/services/gobike/gobike_delivery_choice_screen.dart';
+import 'features/services/gobike/gobike_agency_selection_screen.dart';
+import 'features/services/gobike/gobike_agency_detail_screen.dart';
+import 'features/services/gobike/gobike_map_selection_screen.dart';
+import 'features/services/gobike/gobike_checkout_screen.dart';
+import 'features/services/gobike/gobike_add_card_screen.dart';
+import 'features/services/gobike/gobike_success_screen.dart';
+import 'features/services/gobike/gobike_tracking_connection_screen.dart';
+import 'features/services/gobike/gobike_live_tracking_screen.dart';
+import 'features/services/gobike/gobike_review_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('fr_FR', null);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -76,6 +96,62 @@ class Go212App extends StatelessWidget {
             break;
           case '/success':
             page = const SuccessScreen();
+            break;
+          case '/service/gobike':
+            page = const GoBikeIntroScreen();
+            break;
+          case '/service/gobike/services':
+            page = const GoBikeServicesScreen();
+            break;
+          case '/service/gobike/rental-form':
+            page = const GoBikeRentalFormScreen();
+            break;
+          case '/service/gobike/duration':
+            page = const GoBikeDurationScreen();
+            break;
+          case '/service/gobike/packs':
+            page = const GoBikePacksScreen();
+            break;
+          case '/service/gobike/group-reservation':
+            page = const GoBikeGroupReservationScreen();
+            break;
+          case '/service/gobike/customize':
+            page = const GoBikeCustomizeScreen();
+            break;
+          case '/service/gobike/loading':
+            page = const GoBikeLoadingScreen();
+            break;
+          case '/service/gobike/delivery-choice':
+            page = const GoBikeDeliveryChoiceScreen();
+            break;
+          case '/service/gobike/agency-selection':
+            page = const GoBikeAgencySelectionScreen();
+            break;
+          case '/service/gobike/agency-detail':
+            page = const GoBikeAgencyDetailScreen();
+            break;
+          case '/service/gobike/map-selection':
+            page = const GoBikeMapSelectionScreen();
+            break;
+          case '/service/gobike/checkout':
+            final receptionMode = settings.arguments as String? ?? 'delivery';
+            page = GoBikeCheckoutScreen(receptionMode: receptionMode);
+            break;
+          case '/service/gobike/add-card':
+            page = const GoBikeAddCardScreen();
+            break;
+          case '/service/gobike/success':
+            final receptionMode = settings.arguments as String? ?? 'delivery';
+            page = GoBikeSuccessScreen(receptionMode: receptionMode);
+            break;
+          case '/service/gobike/tracking-connection':
+            page = const GoBikeTrackingConnectionScreen();
+            break;
+          case '/service/gobike/live-tracking':
+            page = const GoBikeLiveTrackingScreen();
+            break;
+          case '/service/gobike/review':
+            page = const GoBikeReviewScreen();
             break;
           default:
             // For unimplemented service routes, show a placeholder
