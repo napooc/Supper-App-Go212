@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _PopService('GoWash', 'Dès 60 DH', 'assets/images/gowash_hero.png', '/service/gowash', const Color(0xFF06B6D4)),
       _PopService('GoClean', 'Dès 150 DH', 'assets/images/goclean_hero.png', '/service/goclean', const Color(0xFF8B5CF6)),
       _PopService('GoFix', 'Devis gratuit', 'assets/images/gofix_hero.png', '/service/gofix', const Color(0xFFF59E0B)),
-      _PopService('GoBike', '30 DH/h', 'assets/images/gobike_hero.png', '/service/gobike', const Color(0xFF0EA5E9)),
+      _PopService('GoBike', '30 DH/h', 'assets/images/gobike_hero.png', '/service/gobike', const Color(0xFF008333)),
     ];
     return SizedBox(
       height: 170,
@@ -192,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _SvcData('GoWash', 'Lavage', Icons.water_drop_rounded, const Color(0xFF06B6D4), 'assets/images/gowash_hero.png', '/service/gowash'),
       _SvcData('GoClean', 'Ménage', Icons.cleaning_services_rounded, const Color(0xFF8B5CF6), 'assets/images/goclean_hero.png', '/service/goclean'),
       _SvcData('GoFix', 'Réparation', Icons.build_rounded, const Color(0xFFF59E0B), 'assets/images/gofix_hero.png', '/service/gofix'),
-      _SvcData('GoBike', 'Vélo', Icons.pedal_bike_rounded, const Color(0xFF0EA5E9), 'assets/images/gobike_hero.png', '/service/gobike'),
+      _SvcData('GoBike', 'Vélo', Icons.pedal_bike_rounded, const Color(0xFF008333), 'assets/images/gobike_hero.png', '/service/gobike'),
       _SvcData('GoPrint', 'Impression', Icons.print_rounded, const Color(0xFFEC4899), 'assets/images/goride_hero.png', '/service/goprint'),
       _SvcData('GoEvent', 'Events', Icons.celebration_rounded, const Color(0xFFF43F5E), 'assets/images/goclean_hero.png', '/service/goevent'),
       _SvcData('GoShop', 'Shopping', Icons.shopping_bag_rounded, const Color(0xFF10B981), 'assets/images/gobike_hero.png', '/service/goshop'),

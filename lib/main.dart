@@ -1,37 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'app/main_shell.dart';
 import 'core/theme/go212_theme.dart';
-import 'features/splash/splash_screen.dart';
-import 'features/onboarding/onboarding_screen.dart';
-import 'features/auth/welcome_screen.dart';
-import 'features/auth/phone_entry_screen.dart';
 import 'features/auth/otp_screen.dart';
-import 'features/services/gowash/gowash_detail_screen.dart';
-import 'features/services/gowash/gowash_intro_screen.dart';
+import 'features/auth/phone_entry_screen.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/booking/gowash_booking_screen.dart';
 import 'features/booking/payment_screen.dart';
 import 'features/booking/success_screen.dart';
-import 'app/main_shell.dart';
+import 'features/goride/booking/goride_agence_screen.dart';
+import 'features/goride/booking/goride_confirm_screen.dart';
+import 'features/goride/booking/goride_delivery_screen.dart';
+import 'features/goride/booking/goride_details_screen.dart';
+import 'features/goride/booking/goride_duration_screen.dart';
+import 'features/goride/booking/goride_payment_screen.dart';
+import 'features/goride/booking/goride_persons_screen.dart';
+import 'features/goride/booking/goride_review_screen.dart';
+import 'features/goride/booking/goride_summary_screen.dart';
+import 'features/goride/booking/goride_thankyou_screen.dart';
+import 'features/goride/booking/goride_tracking_screen.dart';
 import 'features/goride/kyc/kyc_cin_screen.dart';
 import 'features/goride/kyc/kyc_scan_screen.dart';
 import 'features/goride/kyc/kyc_selfie_screen.dart';
-import 'features/goride/kyc/kyc_verify_screen.dart';
 import 'features/goride/kyc/kyc_success_screen.dart';
+import 'features/goride/kyc/kyc_verify_screen.dart';
 import 'features/goride/transition/goride_transition_screen.dart';
-import 'features/goride/booking/goride_persons_screen.dart';
-import 'features/goride/booking/goride_duration_screen.dart';
-import 'features/goride/booking/goride_details_screen.dart';
-import 'features/goride/booking/goride_delivery_screen.dart';
-import 'features/goride/booking/goride_summary_screen.dart';
-import 'features/goride/booking/goride_payment_screen.dart';
-import 'features/goride/booking/goride_confirm_screen.dart';
-import 'features/goride/booking/goride_tracking_screen.dart';
-import 'features/goride/booking/goride_agence_screen.dart';
-import 'features/goride/booking/goride_review_screen.dart';
-import 'features/goride/booking/goride_thankyou_screen.dart';
+import 'features/onboarding/onboarding_screen.dart';
+import 'features/services/gobike/gobike_add_card_screen.dart';
+import 'features/services/gobike/gobike_agency_detail_screen.dart';
+import 'features/services/gobike/gobike_agency_selection_screen.dart';
+import 'features/services/gobike/gobike_checkout_screen.dart';
+import 'features/services/gobike/gobike_customize_screen.dart';
+import 'features/services/gobike/gobike_delivery_choice_screen.dart';
+import 'features/services/gobike/gobike_duration_screen.dart';
+import 'features/services/gobike/gobike_group_reservation_screen.dart';
+import 'features/services/gobike/gobike_intro_screen.dart';
+import 'features/services/gobike/gobike_live_tracking_screen.dart';
+import 'features/services/gobike/gobike_loading_screen.dart';
+import 'features/services/gobike/gobike_map_selection_screen.dart';
+import 'features/services/gobike/gobike_packs_screen.dart';
+import 'features/services/gobike/gobike_rental_form_screen.dart';
+import 'features/services/gobike/gobike_review_screen.dart';
+import 'features/services/gobike/gobike_services_screen.dart';
+import 'features/services/gobike/gobike_success_screen.dart';
+import 'features/services/gobike/gobike_tracking_connection_screen.dart';
+import 'features/services/gowash/gowash_detail_screen.dart';
+import 'features/services/gowash/gowash_intro_screen.dart';
+import 'features/splash/splash_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('fr_FR', null);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -89,6 +110,62 @@ class Go212App extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const PaymentScreen());
           case '/success':
             return MaterialPageRoute(builder: (_) => const SuccessScreen());
+          case '/service/gobike':
+            return MaterialPageRoute(builder: (_) => const GoBikeIntroScreen());
+          case '/service/gobike/services':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeServicesScreen());
+          case '/service/gobike/rental-form':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeRentalFormScreen());
+          case '/service/gobike/duration':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeDurationScreen());
+          case '/service/gobike/packs':
+            return MaterialPageRoute(builder: (_) => const GoBikePacksScreen());
+          case '/service/gobike/group-reservation':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeGroupReservationScreen());
+          case '/service/gobike/customize':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeCustomizeScreen());
+          case '/service/gobike/loading':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeLoadingScreen());
+          case '/service/gobike/delivery-choice':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeDeliveryChoiceScreen());
+          case '/service/gobike/agency-selection':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeAgencySelectionScreen());
+          case '/service/gobike/agency-detail':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeAgencyDetailScreen());
+          case '/service/gobike/map-selection':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeMapSelectionScreen());
+          case '/service/gobike/checkout':
+            final receptionMode = settings.arguments as String? ?? 'delivery';
+            return MaterialPageRoute(
+                builder: (_) =>
+                    GoBikeCheckoutScreen(receptionMode: receptionMode));
+          case '/service/gobike/add-card':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeAddCardScreen());
+          case '/service/gobike/success':
+            final receptionMode = settings.arguments as String? ?? 'delivery';
+            return MaterialPageRoute(
+                builder: (_) =>
+                    GoBikeSuccessScreen(receptionMode: receptionMode));
+          case '/service/gobike/tracking-connection':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeTrackingConnectionScreen());
+          case '/service/gobike/live-tracking':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeLiveTrackingScreen());
+          case '/service/gobike/review':
+            return MaterialPageRoute(
+                builder: (_) => const GoBikeReviewScreen());
           // ── GoRide ──────────────────────────────────────
           case '/goride/kyc/cin':
             return MaterialPageRoute(
