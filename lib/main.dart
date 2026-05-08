@@ -7,6 +7,7 @@ import 'features/auth/welcome_screen.dart';
 import 'features/auth/phone_entry_screen.dart';
 import 'features/auth/otp_screen.dart';
 import 'features/services/gowash/gowash_detail_screen.dart';
+import 'features/services/gowash/gowash_intro_screen.dart';
 import 'features/booking/gowash_booking_screen.dart';
 import 'features/booking/payment_screen.dart';
 import 'features/booking/success_screen.dart';
@@ -73,6 +74,9 @@ class Go212App extends StatelessWidget {
           case '/main':
             return MaterialPageRoute(builder: (_) => const MainShell());
           case '/service/gowash':
+            return MaterialPageRoute(
+                builder: (_) => const GoWashIntroScreen());
+          case '/service/gowash/detail':
             return MaterialPageRoute(
                 builder: (_) => const GoWashDetailScreen());
           case '/service/goride':
