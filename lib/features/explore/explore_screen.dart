@@ -18,23 +18,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   final List<_ExploreService> _all = [
     _ExploreService('GoRide', 'Scooter électrique 100% autonome.', 'À partir de 30 DH/h', Icons.electric_scooter, true, 'Mobilité',
-        'assets/images/goride_hero.png', Go212Colors.primary600, '/service/goride'),
+        'assets/images/goride.png', Go212Colors.primary600, '/service/goride'),
     _ExploreService('GoWash', 'Lavage auto écologique à domicile. Sans eau.', 'Dès 60 DH', Icons.water_drop_rounded, true, 'Maison',
-        'assets/images/gowash_hero.png', const Color(0xFF06B6D4), '/service/gowash'),
+        'assets/images/gowash.png', const Color(0xFF06B6D4), '/service/gowash'),
     _ExploreService('GoBike', 'Location de vélos classiques & E-Bikes en ville.', 'À partir de 30 DH/h', Icons.pedal_bike_rounded, true, 'Mobilité',
-        'assets/images/gobike_hero.png', const Color(0xFF0EA5E9), '/service/gobike'),
+        'assets/images/gobike_hero.png', const Color(0xFF008333), '/service/gobike'),
     _ExploreService('GoClean', 'Nettoyage Airbnb & résidentiel professionnel.', 'Dès 150 DH', Icons.cleaning_services_rounded, true, 'Maison',
-        'assets/images/goclean_hero.png', const Color(0xFF8B5CF6), '/service/goclean'),
+        'assets/images/gowash.png', const Color(0xFF8B5CF6), '/service/goclean'),
     _ExploreService('GoFix', 'Plomberie, électricité, peinture à domicile.', 'Devis gratuit', Icons.build_rounded, true, 'Maison',
-        'assets/images/gofix_hero.png', const Color(0xFFF59E0B), '/service/gofix'),
+        'assets/images/gofix.png', const Color(0xFFF59E0B), '/service/gofix'),
     _ExploreService('GoPrint', 'Impression et personnalisation.', 'Dès 120 DH', Icons.print_rounded, false, 'Shopping',
-        'assets/images/goride_hero.png', const Color(0xFFEC4899), '/service/goprint'),
+        'assets/images/goride.png', const Color(0xFFEC4899), '/service/goprint'),
     _ExploreService('GoEvent', 'Billetterie d\'événements 100% digital.', 'Billetterie', Icons.celebration_rounded, false, 'Shopping',
-        'assets/images/goclean_hero.png', const Color(0xFFF43F5E), '/service/goevent'),
+        'assets/images/gowash.png', const Color(0xFFF43F5E), '/service/goevent'),
     _ExploreService('GoShop', 'Livraison de produits locaux.', 'Livraison express', Icons.shopping_bag_rounded, false, 'Shopping',
-        'assets/images/gobike_hero.png', const Color(0xFF10B981), '/service/goshop'),
+        'assets/images/gobike.png', const Color(0xFF10B981), '/service/goshop'),
     _ExploreService('GoSwap', 'Échange de batteries instantané.', '19 stations', Icons.battery_charging_full_rounded, true, 'Énergie',
-        'assets/images/goride_hero.png', const Color(0xFF6366F1), '/service/goswap'),
+        'assets/images/goride.png', const Color(0xFF6366F1), '/service/goswap'),
   ];
 
   List<_ExploreService> get _filtered {

@@ -41,6 +41,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>GO212 utilise la caméra pour vérifier votre identité (KYC GoRide).</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>GO212 accède à vos photos pour la vérification d'identité.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

@@ -64,7 +64,7 @@ class Go212Theme {
             ),
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -90,7 +90,8 @@ class Go212Theme {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Go212Colors.neutral100,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -101,7 +102,8 @@ class Go212Theme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Go212Colors.primary500, width: 2),
+            borderSide:
+                const BorderSide(color: Go212Colors.primary500, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -143,7 +145,7 @@ class Go212Theme {
           ),
           behavior: SnackBarBehavior.floating,
         ),
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
