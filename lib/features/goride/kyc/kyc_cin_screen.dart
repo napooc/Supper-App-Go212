@@ -228,12 +228,15 @@ class _IllustrationCard extends StatelessWidget {
                     const Icon(Icons.verified_user_rounded,
                         color: Color(0xFF4ADE80), size: 16),
                     const SizedBox(width: 6),
-                    const Text('Vérification rapide',
-                        style: TextStyle(
-                            color: Color(0xFF4ADE80),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5)),
+                    const Flexible(
+                      child: Text('Vérification rapide',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Color(0xFF4ADE80),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5)),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),

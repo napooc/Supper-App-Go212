@@ -119,7 +119,7 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF16A34A)
-                            .withValues(alpha: 0.2 + _dotsAnim.value * 0.2),
+                            .withOpacity(0.2 + _dotsAnim.value * 0.2),
                         blurRadius: 24 + _dotsAnim.value * 16,
                         spreadRadius: _dotsAnim.value * 8,
                       ),
@@ -169,7 +169,7 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
               height: 10,
               decoration: BoxDecoration(
                 color: Go212Colors.primary600
-                    .withValues(alpha: opacity.toDouble()),
+                    .withOpacity(opacity.toDouble()),
                 shape: BoxShape.circle,
               ),
             );
@@ -209,7 +209,7 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF16A34A).withValues(alpha: 0.4),
+                        color: const Color(0xFF16A34A).withOpacity(0.4),
                         blurRadius: 28,
                         offset: const Offset(0, 8),
                       )

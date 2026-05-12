@@ -13,6 +13,16 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
+// Strip -Werror from all plugin JavaCompile tasks (Gradle 8 compatible)
+// Do NOT touch sourceCompatibility/targetCompatibility here — Android SDK classpath must stay intact
+gradle.projectsEvaluated {
+    subprojects { sub ->
+        sub.tasks.withType(JavaCompile).configureEach { task ->
+            task.options.compilerArgs.removeAll { it == '-Werror' }
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

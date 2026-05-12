@@ -1,381 +1,477 @@
-import 'dart:ui';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'gobike_pricing_data.dart';
 
 class GoBikeGroupReservationScreen extends StatefulWidget {
   const GoBikeGroupReservationScreen({super.key});
 
   @override
-  State<GoBikeGroupReservationScreen> createState() => _GoBikeGroupReservationScreenState();
+  State<GoBikeGroupReservationScreen> createState() =>
+      _GoBikeGroupReservationScreenState();
 }
 
-class _GoBikeGroupReservationScreenState extends State<GoBikeGroupReservationScreen> {
+class _GoBikeGroupReservationScreenState
+    extends State<GoBikeGroupReservationScreen> with TickerProviderStateMixin {
   int _bikeCount = 2;
-  final int _maxBikes = 6;
-  final Color primaryGreen = const Color(0xFF009933);
+  final int _maxBikes = 10;
+
+  late final AnimationController _pulseCtrl =
+      AnimationController(vsync: this, duration: const Duration(seconds: 3))
+        ..repeat(reverse: true);
+  late final AnimationController _bounceCtrl =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+  late final AnimationController _floatCtrl =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 2000))
+        ..repeat(reverse: true);
+  late final AnimationController _entryCtrl =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 700))
+        ..forward();
+
+  late final Animation<double> _pulseAnim =
+      Tween<double>(begin: 0.85, end: 1.0).animate(
+          CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+  late final Animation<double> _bounceAnim =
+      Tween<double>(begin: 1.0, end: 1.3).animate(
+          CurvedAnimation(parent: _bounceCtrl, curve: Curves.elasticOut));
+  late final Animation<double> _floatAnim =
+      Tween<double>(begin: -6.0, end: 6.0).animate(
+          CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
+  late final Animation<double> _entryAnim =
+      Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: _entryCtrl, curve: Curves.easeOutBack));
+
+  static const _green = Color(0xFF00C853);
+  static const _darkGreen = Color(0xFF065F46);
+  static const _bg = Color(0xFF0A1628);
+
+  // ── All pricing via singleton (set by duration screen) ────────────────────
+  int get _groupTotal => GoBikePricingData.current
+      .groupHint(_bikeCount).contains('DH')
+          ? GoBikePricingData(  // preview with current bike count
+              durationIndex: GoBikePricingData.current.durationIndex,
+              quantity: GoBikePricingData.current.quantity,
+              bikeCount: _bikeCount,
+            ).rentalTotal
+          : 0;
+
+  String get _priceHint =>
+      GoBikePricingData.current.groupHint(_bikeCount);
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    _bounceCtrl.dispose();
+    _floatCtrl.dispose();
+    _entryCtrl.dispose();
+    super.dispose();
+  }
+
+  void _set(int n) {
+    if (n < 1 || n > _maxBikes) return;
+    HapticFeedback.lightImpact();
+    setState(() => _bikeCount = n);
+    _bounceCtrl.forward(from: 0);
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Get full screen size
-    final Size size = MediaQuery.of(context).size;
-
     return Scaffold(
-      backgroundColor: Colors.black, // Set to black to avoid white flashes
-      body: SizedBox(
-        width: size.width,
-        height: size.height,
+      backgroundColor: _bg,
+      body: AnimatedBuilder(
+        animation: _entryAnim,
+        builder: (_, child) => Opacity(
+          opacity: _entryAnim.value.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, 30 * (1 - _entryAnim.value)),
+            child: child,
+          ),
+        ),
         child: Stack(
           children: [
-            // ─── HERO BACKGROUND (FULL SCREEN) ───
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/groupe.png',
-                width: size.width,
-                height: size.height,
-                fit: BoxFit.cover, // Ensures it covers the entire screen area
+            // Background orbs
+            AnimatedBuilder(
+              animation: _floatAnim,
+              builder: (_, __) => Stack(children: [
+                Positioned(top: 60 + _floatAnim.value, right: -50,
+                    child: _Orb(200, _green.withOpacity(0.07))),
+                Positioned(bottom: 200 - _floatAnim.value, left: -60,
+                    child: _Orb(160, const Color(0xFF16A34A).withOpacity(0.05))),
+              ]),
+            ),
+
+            SafeArea(
+              child: Column(
+                children: [
+                  _header(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 28),
+                          _counterHero(),
+                          const SizedBox(height: 32),
+                          _bikeGrid(),
+                          const SizedBox(height: 28),
+                          _quickPick(),
+                          const SizedBox(height: 28),
+                          _infoCard(),
+                          const SizedBox(height: 28),
+                          _ctaButton(),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            
-            // ─── FULL SCREEN OVERLAY ───
-            Positioned.fill(
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _header() => Container(
+    padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+    child: Row(children: [
+      GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Container(
+          width: 42, height: 42,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withOpacity(0.15)),
+          ),
+          child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+        ),
+      ),
+      const SizedBox(width: 14),
+      Expanded(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('GoBike · Groupe', style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.w500)),
+          Text('Nombre de vélos', style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [_darkGreen, _green]),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text('3 / 7', style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+      ),
+    ]),
+  );
+
+  Widget _counterHero() {
+    return GestureDetector(
+      onVerticalDragUpdate: (d) {
+        if (d.delta.dy < -8) _set(_bikeCount + 1);
+        if (d.delta.dy > 8) _set(_bikeCount - 1);
+      },
+      child: Column(children: [
+        Text('Combien de vélos ?',
+            style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13, letterSpacing: 1.2)),
+        const SizedBox(height: 20),
+        AnimatedBuilder(
+          animation: Listenable.merge([_pulseAnim, _bounceAnim]),
+          builder: (_, __) => Stack(alignment: Alignment.center, children: [
+            // Glow ring
+            Transform.scale(
+              scale: _pulseAnim.value,
               child: Container(
+                width: 200, height: 200,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      primaryGreen.withOpacity(0.8),
-                      primaryGreen.withOpacity(0.3),
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.2), // Slight shadow at the bottom
-                    ],
-                    stops: const [0.0, 0.25, 0.6, 1.0],
-                  ),
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(colors: [
+                    _green.withOpacity(0.18),
+                    _green.withOpacity(0.0),
+                  ]),
                 ),
               ),
             ),
+            // Border ring
+            Container(
+              width: 160, height: 160,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: _green.withOpacity(0.3), width: 1.5),
+              ),
+            ),
+            // Number
+            Transform.scale(
+              scale: _bounceAnim.value,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (c, a) => ScaleTransition(
+                    scale: a, child: FadeTransition(opacity: a, child: c)),
+                child: Text(
+                  '$_bikeCount',
+                  key: ValueKey(_bikeCount),
+                  style: GoogleFonts.nunito(fontSize: 100, fontWeight: FontWeight.w900,
+                      color: Colors.white, height: 1),
+                ),
+              ),
+            ),
+          ]),
+        ),
+        const SizedBox(height: 16),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          child: Text(
+            '$_bikeCount vélo${_bikeCount > 1 ? 's' : ''} · ${_bikeCount == 1 ? 'Solo' : 'Groupe'}',
+            key: ValueKey(_bikeCount),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700),
+          ),
+        ),
+        const SizedBox(height: 20),
+        // +/- row
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          _roundBtn(Icons.remove_rounded, _bikeCount > 1, () => _set(_bikeCount - 1)),
+          const SizedBox(width: 36),
+          _roundBtn(Icons.add_rounded, _bikeCount < _maxBikes, () => _set(_bikeCount + 1)),
+        ]),
+        const SizedBox(height: 8),
+        Text('↕  Glissez le cercle pour changer',
+            style: GoogleFonts.poppins(color: Colors.white24, fontSize: 10)),
+      ]),
+    );
+  }
 
-            // ─── CONTENT (SCROLLABLE) ───
-            Positioned.fill(
-              child: SafeArea(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 30), // Extra space at bottom
-                  child: Column(
-                    children: [
-                      // ─── HEADER ───
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                  onTap: () => Navigator.pop(context),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2),
-                                  ),
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/images/lion.jpeg',
-                                      width: 44,
-                                      height: 44,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            const Text(
-                              'GoBike',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              'Réservation groupe',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Nombre de vélos à réserver',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 13,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            // Progress Bar
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    children: List.generate(6, (index) {
-                                      return Expanded(
-                                        child: Container(
-                                          height: 4,
-                                          margin: EdgeInsets.only(right: index == 5 ? 0 : 5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(index <= 1 ? 1.0 : 0.3),
-                                            borderRadius: BorderRadius.circular(2),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: const Text(
-                                    '2 / 6',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+  Widget _roundBtn(IconData icon, bool enabled, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 58, height: 58,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: enabled
+              ? const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  colors: [_green, _darkGreen])
+              : null,
+          color: enabled ? null : Colors.white.withOpacity(0.06),
+          boxShadow: enabled
+              ? [BoxShadow(color: _green.withOpacity(0.4), blurRadius: 18, offset: const Offset(0, 5))]
+              : [],
+        ),
+        child: Icon(icon, color: enabled ? Colors.white : Colors.white24, size: 26),
+      ),
+    );
+  }
 
-                      const SizedBox(height: 70), // Visual space for hero image
-
-                      // ─── FLOATING CARD ───
-                      AnimationConfiguration.staggeredList(
-                        position: 0,
-                        child: FadeInAnimation(
-                          child: SlideAnimation(
-                            verticalOffset: 40,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 24),
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.96),
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 25,
-                                    offset: const Offset(0, 12),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: primaryGreen,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(Icons.group, color: Colors.white, size: 18),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Combien de vélos ?',
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: const Color(0xFF1E293B),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  '1 vélo = 1 personne',
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 11,
-                                                    color: const Color(0xFF64748B),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 14),
-                                      // Counter
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          _buildCompactCounterButton(
-                                            icon: Icons.remove,
-                                            onPressed: () {
-                                              if (_bikeCount > 1) setState(() => _bikeCount--);
-                                            },
-                                          ),
-                                          Text(
-                                            '$_bikeCount',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 48,
-                                              fontWeight: FontWeight.bold,
-                                              color: primaryGreen,
-                                            ),
-                                          ),
-                                          _buildCompactCounterButton(
-                                            icon: Icons.add,
-                                            onPressed: () {
-                                              if (_bikeCount < _maxBikes) setState(() => _bikeCount++);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // Bike Icons Row
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: List.generate(_maxBikes, (index) {
-                                          bool isActive = index < _bikeCount;
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 2.5),
-                                            child: Icon(
-                                              Icons.pedal_bike,
-                                              size: 22,
-                                              color: isActive ? primaryGreen : Colors.grey.withOpacity(0.25),
-                                            ),
-                                          );
-                                        }),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      // Status Capsule
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                                        decoration: BoxDecoration(
-                                          color: primaryGreen.withOpacity(0.08),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.check_circle, color: primaryGreen, size: 14),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              '$_bikeCount vélos sélectionnés',
-                                              style: GoogleFonts.poppins(
-                                                color: primaryGreen,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      // Continue Button
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 52,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                      Navigator.pushNamed(context, '/service/gobike/customize');
-                                    },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: primaryGreen,
-                                            foregroundColor: Colors.white,
-                                            elevation: 0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(26),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              const Spacer(flex: 2),
-                                              Text(
-                                                'Continuer',
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const Spacer(flex: 1),
-                                              Container(
-                                                padding: const EdgeInsets.all(4),
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(Icons.arrow_forward, color: primaryGreen, size: 16),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+  Widget _bikeGrid() {
+    return Column(children: [
+      // Animated bike icons (2 rows of 5)
+      ...List.generate(2, (row) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (col) {
+              final idx = row * 5 + col;
+              final active = idx < _bikeCount;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: GestureDetector(
+                  onTap: () => _set(idx + 1),
+                  child: AnimatedBuilder(
+                    animation: _floatAnim,
+                    builder: (_, __) {
+                      final offset = active
+                          ? math.sin((_floatAnim.value / 6) + idx * 0.7) * 4.0
+                          : 0.0;
+                      return Transform.translate(
+                        offset: Offset(0, offset),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 280),
+                          curve: Curves.easeOutBack,
+                          width: active ? 46 : 38,
+                          height: active ? 46 : 38,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: active
+                                ? const LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [Color(0xFFA3E635), _green])
+                                : null,
+                            color: active ? null : Colors.white.withOpacity(0.06),
+                            border: Border.all(
+                              color: active ? Colors.transparent : Colors.white.withOpacity(0.1),
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: active ? _green.withOpacity(0.5) : Colors.transparent,
+                                blurRadius: 12,
+                                spreadRadius: active ? 1 : 0,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.pedal_bike_rounded,
+                            size: active ? 22 : 18,
+                            color: active ? Colors.white : Colors.white24,
                           ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
+                ),
+              );
+            }),
+          ),
+        );
+      }),
+      const SizedBox(height: 12),
+      // Progress bar
+      ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: LinearProgressIndicator(
+          value: _bikeCount / _maxBikes,
+          backgroundColor: Colors.white.withOpacity(0.08),
+          valueColor: const AlwaysStoppedAnimation<Color>(_green),
+          minHeight: 5,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text('1 min', style: GoogleFonts.poppins(color: Colors.white24, fontSize: 10)),
+        Text('$_bikeCount / $_maxBikes vélos', style: GoogleFonts.poppins(color: _green, fontSize: 11, fontWeight: FontWeight.w700)),
+        Text('10 max', style: GoogleFonts.poppins(color: Colors.white24, fontSize: 10)),
+      ]),
+    ]);
+  }
+
+  Widget _quickPick() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text('SÉLECTION RAPIDE', style: GoogleFonts.poppins(color: Colors.white30, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.5)),
+      const SizedBox(height: 12),
+      Row(
+        children: List.generate(10, (i) {
+          final n = i + 1;
+          final sel = n == _bikeCount;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => _set(n),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutBack,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: sel ? const LinearGradient(colors: [_green, _darkGreen]) : null,
+                  color: sel ? null : Colors.white.withOpacity(0.06),
+                  border: Border.all(color: sel ? Colors.transparent : Colors.white.withOpacity(0.08)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: sel ? _green.withOpacity(0.35) : Colors.transparent,
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text('$n',
+                      style: GoogleFonts.nunito(
+                          fontSize: sel ? 16 : 13,
+                          fontWeight: FontWeight.w900,
+                          color: sel ? Colors.white : Colors.white38)),
                 ),
               ),
             ),
-          ],
-        ),
+          );
+        }),
       ),
+    ]);
+  }
+
+  Widget _infoCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.07)),
+      ),
+      child: Column(children: [
+        _infoRow(Icons.local_offer_outlined, _priceHint, const Color(0xFFFBBF24)),
+        const SizedBox(height: 12),
+        _infoRow(Icons.verified_outlined, 'Vélos vérifiés · prêts à rouler', const Color(0xFF60A5FA)),
+        const SizedBox(height: 12),
+        _infoRow(Icons.group_outlined, '1 vélo = 1 personne · guidon inclus', const Color(0xFFA78BFA)),
+      ]),
     );
   }
 
-  Widget _buildCompactCounterButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _infoRow(IconData icon, String text, Color color) {
+    return Row(children: [
+      Container(
+        width: 34, height: 34,
+        decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, color: color, size: 16),
+      ),
+      const SizedBox(width: 12),
+      Expanded(child: Text(text, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500))),
+    ]);
+  }
+
+  Widget _ctaButton() {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        // ✅ Update singleton with selected bike count — pricing stays consistent
+        GoBikePricingData.updateBikeCount(_bikeCount);
+        Navigator.pushNamed(context, '/service/gobike/customize');
+      },
       child: Container(
-        padding: const EdgeInsets.all(10),
+        height: 64,
         decoration: BoxDecoration(
-          color: const Color(0xFFF1F5F9),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(32),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFA3E635), _green, _darkGreen],
+            stops: [0.0, 0.5, 1.0],
+          ),
+          boxShadow: [BoxShadow(color: _green.withOpacity(0.4), blurRadius: 24, offset: const Offset(0, 10))],
         ),
-        child: Icon(icon, color: const Color(0xFF475569), size: 22),
+        child: Row(children: [
+          const SizedBox(width: 24),
+          Expanded(
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Continuer avec $_bikeCount vélo${_bikeCount > 1 ? 's' : ''}',
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: Text(_priceHint, key: ValueKey(_bikeCount),
+                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: 10)),
+              ),
+            ]),
+          ),
+          Container(
+            width: 44, height: 44,
+            margin: const EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+            child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 22),
+          ),
+        ]),
       ),
     );
   }
+}
+
+class _Orb extends StatelessWidget {
+  final double size;
+  final Color color;
+  const _Orb(this.size, this.color);
+  @override
+  Widget build(BuildContext context) =>
+      Container(width: size, height: size, decoration: BoxDecoration(shape: BoxShape.circle, color: color));
 }

@@ -22,6 +22,9 @@ class GoWashHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    final headerHeight = topPadding + 165.0;
+
     return Stack(
       children: [
         // 1. MAIN BACKGROUND WITH PREMIUM GRADIENT & ORGANIC CLIPPER
@@ -29,7 +32,7 @@ class GoWashHeader extends StatelessWidget {
           clipper: PremiumHeaderClipper(),
           child: Container(
             width: double.infinity,
-            height: 205,
+            height: headerHeight,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -53,7 +56,7 @@ class GoWashHeader extends StatelessWidget {
                 
                 // Subtle Pattern
                 CustomPaint(
-                  size: const Size(double.infinity, 205),
+                  size: Size(double.infinity, headerHeight),
                   painter: HeaderPatternPainter(),
                 ),
               ],

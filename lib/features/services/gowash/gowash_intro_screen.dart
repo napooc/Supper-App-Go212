@@ -117,18 +117,78 @@ class _GoWashIntroScreenState extends State<GoWashIntroScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: ready
-          ? SizedBox.expand(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: ctrl.value.size.width,
-                  height: ctrl.value.size.height,
-                  child: VideoPlayer(ctrl),
-                ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // ── Video (or black while loading)
+          if (ready)
+            FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: ctrl.value.size.width,
+                height: ctrl.value.size.height,
+                child: VideoPlayer(ctrl),
               ),
             )
-          : const SizedBox.expand(), // black while loading, no flicker
+          else
+            const SizedBox.expand(),
+
+          // ── Dark gradient overlay for contrast
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.3),
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.55),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Passer button (matches GoBike exactly)
+          Positioned(
+            bottom: 50,
+            right: 24,
+            child: GestureDetector(
+              onTap: _navigateToHome,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.5),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Passer',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

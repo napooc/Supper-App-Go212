@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'gobike_pricing_data.dart';
 
 class GoBikeCheckoutScreen extends StatefulWidget {
   final String receptionMode; // 'delivery' or 'pickup'
@@ -21,14 +22,34 @@ class _GoBikeCheckoutScreenState extends State<GoBikeCheckoutScreen> {
   final Color darkGreen = const Color(0xFF065F46);
   final Color bgColor = const Color(0xFFF6F7F8);
 
-  // Mock Prices matching reference image
-  double subtotal = 47.90;
-  double discount = 0.0;
-  double delivery = 0.0; 
-  double fees = 5.00;
+  // ── Pricing (all from GoBikePricingData singleton) ──────────────────────
+  double subtotal = 0.0;       // = pricing.baseTotal (before group discount)
+  double discount = 0.0;       // = pricing.discountAmount (group discount)
+  double delivery = 0.0;       // delivery fee (set if mode == 'delivery')
+  double fees = 10.0;          // fixed service fee
+  bool _priceLoaded = false;
   bool _isPromoExpanded = false;
 
+  // Breakdown display fields
+  int _bikeCount = 1;
+  int _durationQty = 1;
+  String _durationTitle = 'Location';
+  int _unitPrice = 30;
+
   double get total => (subtotal - discount) + delivery + fees;
+
+  @override
+  void initState() {
+    super.initState();
+    // ✅ Read from singleton — guaranteed to match what the user selected
+    final pricing = GoBikePricingData.current;
+    subtotal      = pricing.baseTotal.toDouble();
+    discount      = pricing.discountAmount.toDouble();
+    _bikeCount    = pricing.bikeCount;
+    _durationQty  = pricing.quantity;
+    _unitPrice    = pricing.unitPrice;
+    _durationTitle = pricing.durationTitle;
+  }
 
   void _showPaymentModal() {
     showModalBottomSheet(
@@ -115,37 +136,52 @@ class _GoBikeCheckoutScreenState extends State<GoBikeCheckoutScreen> {
   }
 
   Widget _buildHeader() {
-    return Stack(
-      children: [
-        // Using hero_header.png as fallback if _2 fails, but user wants _2 if possible.
-        // I'll try _2 first as requested, but I'll add an errorBuilder to fallback to hero_header.png
-        Image.asset(
-          'assets/images/hero_header_2.png',
-          width: double.infinity,
-          fit: BoxFit.fitWidth,
-          errorBuilder: (context, error, stackTrace) {
-            return Image.asset(
-              'assets/images/hero_header.png',
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
-            );
-          },
+    final topPad = MediaQuery.of(context).padding.top;
+    return Container(
+      padding: EdgeInsets.only(top: topPad + 10, left: 20, right: 20, bottom: 18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF065F46), Color(0xFF009933), Color(0xFF16A34A)],
         ),
-        // Functional back button overlay
-        Positioned(
-          top: 30,
-          left: 0,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              width: 80,
-              height: 80,
-              color: Colors.transparent,
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withOpacity(0.2)),
+              ),
+              child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('GoBike', style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+                Text('Paiement', style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+            ),
+            child: Text('6 / 6', style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -312,22 +348,25 @@ class _GoBikeCheckoutScreenState extends State<GoBikeCheckoutScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          _buildSummaryRow('Produits', '${subtotal.toStringAsFixed(2)} MAD'),
-          _buildSummaryRow('Promotions', '-${discount.toStringAsFixed(2)} MAD', isDiscount: true),
-          _buildSummaryRow('Sous-total', '${(subtotal - discount).toStringAsFixed(2)} MAD', isBold: true),
+          // Accurate breakdown rows
+          if (_durationTitle.isNotEmpty)
+            _buildSummaryRow('Durée', _durationTitle),
+          if (_bikeCount > 1)
+            _buildSummaryRow('Vélos', '$_bikeCount vélo${_bikeCount > 1 ? "s" : ""}'),
+          _buildSummaryRow('Sous-total', '${subtotal.toStringAsFixed(0)} DH'),
+          _buildSummaryRow('Promotions', '-${discount.toStringAsFixed(0)} DH', isDiscount: discount > 0),
           const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1)),
-          _buildSummaryRow('Livraison', '0,00 MAD', isGreen: true, labelSuffix: 'GRATUIT'),
-          _buildSummaryRow('Frais de service', '${fees.toStringAsFixed(2)} MAD', showInfo: true),
+          _buildSummaryRow('Livraison', '0 DH', isGreen: true, labelSuffix: 'GRATUIT'),
+          _buildSummaryRow('Frais de service', '${fees.toStringAsFixed(0)} DH', showInfo: true),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Total à payer', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text('${total.toStringAsFixed(2)} MAD', style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: primaryGreen)),
+              Text('${total.toStringAsFixed(0)} DH', style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: primaryGreen)),
             ],
           ),
           const SizedBox(height: 20),
-          // Savings Box
           _buildSavingsBox(),
         ],
       ),
@@ -361,7 +400,7 @@ class _GoBikeCheckoutScreenState extends State<GoBikeCheckoutScreen> {
   }
 
   Widget _buildSavingsBox() {
-    double saved = discount + (delivery == 0 ? 10.0 : 0.0);
+    double saved = discount + 10.0; // 10 DH = free delivery
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -388,8 +427,9 @@ class _GoBikeCheckoutScreenState extends State<GoBikeCheckoutScreen> {
   }
 
   Widget _buildFinalCTA() {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+      padding: EdgeInsets.fromLTRB(20, 10, 20, bottomPad + 14),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],

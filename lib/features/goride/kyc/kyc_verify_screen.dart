@@ -214,7 +214,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Go212Colors.primary600.withValues(alpha: 0.35),
+                  color: Go212Colors.primary600.withOpacity(0.35),
                   blurRadius: 24,
                   spreadRadius: 4,
                 ),
@@ -240,7 +240,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFFF59E0B)
-                    .withValues(alpha: 0.08 + _pulseAnim.value * 0.08),
+                    .withOpacity(0.08 + _pulseAnim.value * 0.08),
                 blurRadius: 20 + _pulseAnim.value * 10,
                 spreadRadius: _pulseAnim.value * 6,
               ),
@@ -292,7 +292,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
           boxShadow: [
             BoxShadow(
               color: Go212Colors.primary400
-                  .withValues(alpha: 0.08 + _pulseAnim.value * 0.08),
+                  .withOpacity(0.08 + _pulseAnim.value * 0.08),
               blurRadius: 20 + _pulseAnim.value * 10,
               spreadRadius: _pulseAnim.value * 6,
             ),
@@ -324,7 +324,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Go212Colors.primary600.withValues(alpha: 0.3),
+                    color: Go212Colors.primary600.withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -464,7 +464,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
             boxShadow: isCurrent
                 ? [
                     BoxShadow(
-                        color: Go212Colors.primary600.withValues(alpha: 0.08),
+                        color: Go212Colors.primary600.withOpacity(0.08),
                         blurRadius: 12,
                         offset: const Offset(0, 4))
                   ]
@@ -529,7 +529,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
                         style: TextStyle(
                             fontSize: 11,
                             color: Go212Colors.primary600
-                                .withValues(alpha: 0.8)),
+                                .withOpacity(0.8)),
                       ),
                   ],
                 ),
@@ -672,7 +672,7 @@ class _GoRideKycVerifyScreenState extends State<GoRideKycVerifyScreen>
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Go212Colors.primary600.withValues(alpha: 0.35),
+                color: Go212Colors.primary600.withOpacity(0.35),
                 blurRadius: 14,
                 offset: const Offset(0, 5),
               ),
@@ -739,7 +739,7 @@ class _SpinRingPainter extends CustomPainter {
       math.pi,
       math.pi * 0.6,
       false,
-      paint..color = color.withValues(alpha: 0.4),
+      paint..color = color.withOpacity(0.4),
     );
   }
 

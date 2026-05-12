@@ -13,10 +13,12 @@ class _GoBikeLoadingScreenState extends State<GoBikeLoadingScreen> {
   @override
   void initState() {
     super.initState();
-    // Simulate loading for 2.5 seconds
+    // Pricing lives in GoBikePricingData singleton — no args needed
     Timer(const Duration(milliseconds: 2500), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/service/gobike/delivery-choice');
+        Navigator.pushReplacementNamed(
+          context, '/service/gobike/delivery-choice',
+        );
       }
     });
   }

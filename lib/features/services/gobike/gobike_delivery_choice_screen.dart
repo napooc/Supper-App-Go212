@@ -9,9 +9,11 @@ class GoBikeDeliveryChoiceScreen extends StatefulWidget {
 }
 
 class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen> {
-  String? _expandedOption; // 'delivery' or 'pickup'
+  // Default to 'delivery' so the confirm button is active from the start
+  String _expandedOption = 'delivery';
   bool _showMapPicker = false;
   String _selectedAddress = 'Boulvard Bourgogne, Casablanca';
+  Map<String, dynamic>? _pricingArgs; // carry-through from duration/group screens
   
   final Color primaryGreen = const Color(0xFF009933);
   final Color darkGreen = const Color(0xFF065F46);
@@ -19,14 +21,12 @@ class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen>
 
   void _toggleOption(String option) {
     setState(() {
-      if (_expandedOption == option) {
-        _expandedOption = null;
-      } else {
-        _expandedOption = option;
-        _showMapPicker = false;
-      }
+      // Always select the tapped option (never deselect — button must stay active)
+      _expandedOption = option;
+      _showMapPicker = false;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,63 +80,31 @@ class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen>
   }
 
   Widget _buildHeroHeader() {
+    final topPad = MediaQuery.of(context).padding.top;
     return Container(
-      width: double.infinity,
+      padding: EdgeInsets.only(top: topPad + 10, left: 20, right: 20, bottom: 18),
       decoration: BoxDecoration(
-        color: primaryGreen,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF065F46), Color(0xFF009933), Color(0xFF16A34A)],
+        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+          _buildIconButton(Icons.arrow_back, onTap: () => Navigator.pop(context)),
+          const SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    _buildIconButton(Icons.arrow_back, onTap: () => Navigator.pop(context)),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('GoBike', style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text('Réception', style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12)),
-                      ],
-                    ),
-                    const Spacer(),
-                    _buildIconButton(Icons.headset_mic_outlined),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Comment souhaitez-\nvous recevoir votre vélo ?',
-                        style: GoogleFonts.poppins(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, height: 1.1),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Choisissez l\'option qui vous convient le mieux',
-                        style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.9), fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                _buildProgressBar(),
+                Text('GoBike', style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+                Text('Réception', style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
-          Positioned(
-            right: -10,
-            bottom: -5,
-            child: Image.asset('assets/images/hero_header.png', width: 180, fit: BoxFit.contain),
-          ),
+          _buildIconButton(Icons.headset_mic_outlined),
         ],
       ),
     );
@@ -224,12 +192,24 @@ class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen>
                       ],
                     ),
                   ),
-                  // Arrow
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(color: isExpanded ? primaryGreen : bgColor, shape: BoxShape.circle),
-                    child: Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.chevron_right, color: isExpanded ? Colors.white : Colors.grey, size: 20),
+                  // Checkmark when selected
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: isExpanded
+                        ? Container(
+                            key: const ValueKey(true),
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(color: primaryGreen, shape: BoxShape.circle),
+                            child: const Icon(Icons.check, color: Colors.white, size: 18),
+                          )
+                        : Container(
+                            key: const ValueKey(false),
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
+                            child: const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+                          ),
                   ),
                 ],
               ),
@@ -549,8 +529,9 @@ class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen>
   }
 
   Widget _buildStickyFooter() {
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+      padding: EdgeInsets.fromLTRB(20, 10, 20, bottomPad + 14),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
@@ -559,13 +540,14 @@ class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen>
         width: double.infinity,
         height: 60,
         child: ElevatedButton(
-          onPressed: _expandedOption != null ? () {
+          onPressed: () {
+            // Singleton holds all pricing — just pass the delivery mode
             Navigator.pushNamed(
-              context, 
+              context,
               '/service/gobike/checkout',
-              arguments: _expandedOption,
+              arguments: {'deliveryMode': _expandedOption},
             );
-          } : null,
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: darkGreen,
             foregroundColor: Colors.white,
@@ -579,7 +561,9 @@ class _GoBikeDeliveryChoiceScreenState extends State<GoBikeDeliveryChoiceScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Confirmer le mode de réception',
+                  _expandedOption == 'delivery'
+                      ? 'Livraison à domicile ✓'
+                      : 'Retrait en agence ✓',
                   style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -196,7 +196,7 @@ class _GoRideKycScanScreenState extends State<GoRideKycScanScreen> {
         fit: StackFit.expand,
         children: [
           Image.memory(current, fit: BoxFit.cover),
-          Container(color: Colors.black.withValues(alpha: 0.25)),
+          Container(color: Colors.black.withOpacity(0.25)),
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -205,7 +205,7 @@ class _GoRideKycScanScreenState extends State<GoRideKycScanScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Go212Colors.primary600.withValues(alpha: 0.4),
+                    color: Go212Colors.primary600.withOpacity(0.4),
                     blurRadius: 12,
                   )
                 ],
@@ -245,7 +245,7 @@ class _GoRideKycScanScreenState extends State<GoRideKycScanScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: Go212Colors.primary400.withValues(alpha: 0.5),
+                    color: Go212Colors.primary400.withOpacity(0.5),
                     width: 2),
               ),
               child: Stack(
@@ -367,7 +367,7 @@ class _GoRideKycScanScreenState extends State<GoRideKycScanScreen> {
                       : [
                           BoxShadow(
                             color:
-                                Go212Colors.primary600.withValues(alpha: 0.4),
+                                Go212Colors.primary600.withOpacity(0.4),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           )

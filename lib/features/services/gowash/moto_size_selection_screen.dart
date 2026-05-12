@@ -138,20 +138,23 @@ class _MotoSizeSelectionScreenState extends State<MotoSizeSelectionScreen> {
 
   Widget _buildContinueButton() {
     final enabled = _selectedSize != null;
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: enabled ? _onContinue : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _primaryGreen,
-          disabledBackgroundColor: Colors.grey.shade300,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Continuer',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
+    return SafeArea(
+      top: false,
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: enabled ? _onContinue : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _primaryGreen,
+            disabledBackgroundColor: Colors.grey.shade300,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 0,
+          ),
+          child: const Text(
+            'Continuer',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
+          ),
         ),
       ),
     );

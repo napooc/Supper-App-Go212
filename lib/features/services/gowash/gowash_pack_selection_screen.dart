@@ -137,8 +137,9 @@ class _GoWashPackSelectionScreenState extends State<GoWashPackSelectionScreen>
 
   Widget _buildCTA() {
     final enabled = _selected != null;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
+      padding: EdgeInsets.fromLTRB(20, 14, 20, bottomPad + 16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

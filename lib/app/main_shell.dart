@@ -30,9 +30,7 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       extendBody: true,
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: _currentIndex == 0
-          ? null
-          : Container(
+      bottomNavigationBar: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [

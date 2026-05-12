@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/theme/go212_colors.dart';
 import '../models/goride_booking_model.dart';
 import '../widgets/goride_header.dart';
@@ -14,6 +15,7 @@ class GoRideDurationScreen extends StatefulWidget {
 class _GoRideDurationScreenState extends State<GoRideDurationScreen>
     with SingleTickerProviderStateMixin {
   String? _selected;
+  int _quantity = 1;
   late AnimationController _anim;
   late Animation<double> _fade;
 
@@ -70,10 +72,16 @@ class _GoRideDurationScreenState extends State<GoRideDurationScreen>
                     .map((item) => _ImageCard(
                           item: item,
                           isSelected: _selected == item.key,
-                          onTap: () => setState(() => _selected = item.key),
+                          onTap: () => setState(() {
+                            _selected = item.key;
+                            _quantity = 1; // reset on each selection
+                          }),
                         ))
                     .toList(),
               ),
+              const SizedBox(height: 14),
+              // ── Quantity counter (slides in when selected) ──
+              if (_selected != null) _buildQuantityCounter(),
               const SizedBox(height: 12),
             ],
           ),
@@ -81,7 +89,10 @@ class _GoRideDurationScreenState extends State<GoRideDurationScreen>
       ),
       onNext: _selected != null
           ? () => Navigator.pushNamed(context, '/goride/booking/details',
-              arguments: booking.copyWith(duration: _selected))
+              arguments: booking.copyWith(
+                duration: _selected,
+                durationQuantity: _quantity,
+              ))
           : null,
     );
   }
@@ -132,6 +143,121 @@ class _GoRideDurationScreenState extends State<GoRideDurationScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ── Animated Quantity Counter ────────────────────────────────────────────
+  Widget _buildQuantityCounter() {
+    // Prices per unit (must match GoRideBooking.unitPrice)
+    const priceMap  = {'heure': 30,      'jour': 150,   'semaine': 700, 'mois': 2500};
+    const maxQtyMap = {'heure': 24,      'jour': 30,    'semaine': 12,  'mois': 12};
+    const singular  = {'heure': 'Heure', 'jour': 'Jour','semaine': 'Semaine','mois': 'Mois'};
+    const plural    = {'heure': 'Heures','jour': 'Jours','semaine': 'Semaines','mois': 'Mois'};
+
+    final maxQty    = maxQtyMap[_selected] ?? 24;
+    final unitPrice = priceMap[_selected]  ?? 0;
+    final totalPrice = unitPrice * _quantity;
+    // Correct French singular/plural
+    final label     = _quantity == 1
+        ? (singular[_selected] ?? _selected!)
+        : (plural[_selected]   ?? _selected!);
+    final canDecrease = _quantity > 1;
+    final canIncrease = _quantity < maxQty;
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOutCubic,
+      child: Container(
+        height: 78,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.lerp(Go212Colors.primary600, Colors.black, 0.22)!,
+              Go212Colors.primary500,
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: Go212Colors.primary500.withOpacity(0.35),
+              blurRadius: 20,
+              spreadRadius: 1,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // ── [−] Decrease ─────────────────────────────────────────────
+            GestureDetector(
+              onTap: canDecrease
+                  ? () { HapticFeedback.lightImpact(); setState(() => _quantity--); }
+                  : null,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 72,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(canDecrease ? 0.18 : 0.05),
+                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(22)),
+                ),
+                child: Icon(Icons.remove_rounded,
+                    color: Colors.white.withOpacity(canDecrease ? 1.0 : 0.28), size: 30),
+              ),
+            ),
+            // ── Center ───────────────────────────────────────────────────
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(children: [
+                      TextSpan(
+                        text: '$_quantity ',
+                        style: const TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.w900,
+                            color: Colors.white, height: 1.0),
+                      ),
+                      TextSpan(
+                        text: label,
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700,
+                            color: Colors.white.withOpacity(0.88)),
+                      ),
+                    ]),
+                  ),
+                  const SizedBox(height: 3),
+                  Text('Total estimé : $totalPrice DH',
+                      style: TextStyle(
+                          fontSize: 10.5,
+                          color: Colors.white.withOpacity(0.65),
+                          fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+            // ── [+] Increase ─────────────────────────────────────────────
+            GestureDetector(
+              onTap: canIncrease
+                  ? () { HapticFeedback.lightImpact(); setState(() => _quantity++); }
+                  : null,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 72,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(canIncrease ? 0.18 : 0.05),
+                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(22)),
+                ),
+                child: Icon(Icons.add_rounded,
+                    color: Colors.white.withOpacity(canIncrease ? 1.0 : 0.28), size: 30),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

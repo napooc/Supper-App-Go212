@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'gobike_header.dart';
 
 class GoBikePacksScreen extends StatefulWidget {
   const GoBikePacksScreen({super.key});
@@ -21,126 +22,11 @@ class _GoBikePacksScreenState extends State<GoBikePacksScreen> {
       backgroundColor: bgColor,
       body: Column(
         children: [
-          // ─── HEADER ───
-          Container(
-            padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
-            decoration: BoxDecoration(
-              color: primaryGreen,
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(32),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Back Button
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    // Titles
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'GoBike',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            'Nos Packs Premium',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Avatar
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/lion.jpeg',
-                          width: 52,
-                          height: 52,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Choisissez votre expérience GoBike',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Progress Bar
-                Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: List.generate(6, (index) {
-                          return Expanded(
-                            child: Container(
-                              height: 5,
-                              margin: EdgeInsets.only(right: index == 5 ? 0 : 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(index <= 2 ? 1.0 : 0.25),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.18),
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      child: const Text(
-                        '3 / 6',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          GoBikeHeader(
+            title: 'Nos Packs Premium',
+            subtitle: 'GoBike',
+            stepText: '3 / 6',
+            onBack: () => Navigator.pop(context),
           ),
 
           // ─── PACKS LIST ───
@@ -168,51 +54,10 @@ class _GoBikePacksScreenState extends State<GoBikePacksScreen> {
             ),
           ),
 
-          // ─── BOTTOM BUTTON ───
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-            child: SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: _selectedPackIndex != null
-                    ? () {
-                        Navigator.pushNamed(context, '/service/gobike/customize');
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryGreen,
-                  foregroundColor: Colors.white,
-                  elevation: 4,
-                  shadowColor: primaryGreen.withOpacity(0.4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Spacer(flex: 2),
-                    Text(
-                      'Continuer',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(flex: 1),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.arrow_forward, color: primaryGreen, size: 20),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          GoBikeCTA(
+            label: 'Continuer',
+            enabled: _selectedPackIndex != null,
+            onPressed: () => Navigator.pushNamed(context, '/service/gobike/customize'),
           ),
         ],
       ),

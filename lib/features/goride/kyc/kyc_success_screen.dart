@@ -134,7 +134,7 @@ class _GoRideKycSuccessScreenState extends State<GoRideKycSuccessScreen>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF16A34A).withValues(alpha: 0.4),
+                  color: const Color(0xFF16A34A).withOpacity(0.4),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 )
@@ -163,7 +163,7 @@ class _GoRideKycSuccessScreenState extends State<GoRideKycSuccessScreen>
                 border: Border.all(color: const Color(0xFFF0FDF4), width: 3),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF22C55E).withValues(alpha: 0.4),
+                    color: const Color(0xFF22C55E).withOpacity(0.4),
                     blurRadius: 8,
                   )
                 ],
@@ -186,7 +186,7 @@ class _GoRideKycSuccessScreenState extends State<GoRideKycSuccessScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF16A34A).withValues(alpha: 0.1),
+            color: const Color(0xFF16A34A).withOpacity(0.1),
             blurRadius: 24,
             offset: const Offset(0, 8),
           )
@@ -339,7 +339,7 @@ class _ConfettiPainter extends CustomPainter {
       final speed = 0.5 + _rng.nextDouble() * 0.5;
       final y = startY + (endY - startY) * (progress * speed).clamp(0.0, 1.0);
       final opacity = (1.0 - progress).clamp(0.0, 1.0);
-      final color = colors[i % colors.length].withValues(alpha: opacity * 0.7);
+      final color = colors[i % colors.length].withOpacity(opacity * 0.7);
       final paint = Paint()..color = color;
 
       final rotation = progress * math.pi * (2 + _rng.nextDouble() * 4);

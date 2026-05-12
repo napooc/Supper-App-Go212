@@ -32,7 +32,7 @@ class KycProgressBar extends StatelessWidget {
               child: Container(
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Colors.white.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -68,7 +68,7 @@ class KycProgressBar extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: done || current
                           ? Colors.white
-                          : Colors.white.withValues(alpha: 0.3),
+                          : Colors.white.withOpacity(0.3),
                       shape: BoxShape.circle,
                     ),
                     child: done
@@ -93,7 +93,7 @@ class KycProgressBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.18),
+                      color: Colors.black.withOpacity(0.18),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),

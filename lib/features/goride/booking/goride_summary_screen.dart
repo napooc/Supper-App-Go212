@@ -102,7 +102,7 @@ class _GoRideSummaryScreenState extends State<GoRideSummaryScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  booking.pricePerUnit,
+                  '${booking.rentalTotal} DH',
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 28,
@@ -111,7 +111,7 @@ class _GoRideSummaryScreenState extends State<GoRideSummaryScreen>
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  'Formule ${booking.durationLabel} · ${booking.totalMotos} moto${booking.totalMotos > 1 ? "s" : ""}',
+                  '${booking.quantityLabel} · ${booking.totalMotos} moto${booking.totalMotos > 1 ? "s" : ""} · ${booking.pricePerUnit}',
                   style: TextStyle(
                       // ignore: deprecated_member_use
                       color: Colors.white.withOpacity(0.72),
@@ -179,14 +179,15 @@ class _GoRideSummaryScreenState extends State<GoRideSummaryScreen>
 
   Widget _buildSummaryCard(GoRideBooking booking) {
     final rows = [
-      _SRow(
-          Icons.people_rounded,
-          'Passagers',
+      _SRow(Icons.people_rounded, 'Passagers',
           booking.persons == 1 ? 'Solo (1 pers.)' : 'Groupe',
-          const Color(0xFF16A34A),
-          '/goride/booking/persons'),
+          const Color(0xFF16A34A), '/goride/booking/persons'),
       _SRow(Icons.timer_rounded, 'Formule', booking.durationLabel,
           const Color(0xFF3B82F6), '/goride/booking/duration'),
+      _SRow(Icons.tag_rounded, 'Durée totale', booking.quantityLabel,
+          const Color(0xFF8B5CF6), '/goride/booking/duration'),
+      _SRow(Icons.payments_rounded, 'Total location', '${booking.rentalTotal} DH',
+          const Color(0xFF009933), '/goride/booking/duration'),
       _SRow(Icons.calendar_today_rounded, 'Date de départ',
           booking.formattedDate, const Color(0xFFF59E0B), '/goride/booking/details'),
       _SRow(Icons.access_time_rounded, 'Heure de départ',

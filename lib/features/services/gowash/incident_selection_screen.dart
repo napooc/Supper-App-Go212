@@ -125,23 +125,26 @@ class _IncidentSelectionScreenState extends State<IncidentSelectionScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-            child: SizedBox(
-              width: double.infinity,
-              height: 58,
-              child: ElevatedButton(
-                onPressed: _selectedIndex != null ? _submitIncident : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _green,
-                  disabledBackgroundColor: Colors.grey.shade300,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Envoyer le rapport à l\'équipe Go212',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 58,
+                child: ElevatedButton(
+                  onPressed: _selectedIndex != null ? _submitIncident : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _green,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Envoyer le rapport à l\'équipe Go212',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14),
+                  ),
                 ),
               ),
             ),

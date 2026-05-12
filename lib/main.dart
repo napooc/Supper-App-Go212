@@ -46,6 +46,9 @@ import 'features/services/gobike/gobike_review_screen.dart';
 import 'features/services/gobike/gobike_services_screen.dart';
 import 'features/services/gobike/gobike_success_screen.dart';
 import 'features/services/gobike/gobike_tracking_connection_screen.dart';
+import 'features/services/gobike/gobike_bike_map_screen.dart';
+import 'features/services/gobike/gobike_bike_payment_screen.dart';
+import 'features/services/gobike/gobike_active_ride_screen.dart';
 import 'features/services/gowash/gowash_detail_screen.dart';
 import 'features/services/gowash/gowash_intro_screen.dart';
 import 'features/splash/splash_screen.dart';
@@ -120,14 +123,17 @@ class Go212App extends StatelessWidget {
                 builder: (_) => const GoBikeRentalFormScreen());
           case '/service/gobike/duration':
             return MaterialPageRoute(
+                settings: settings,
                 builder: (_) => const GoBikeDurationScreen());
           case '/service/gobike/packs':
             return MaterialPageRoute(builder: (_) => const GoBikePacksScreen());
           case '/service/gobike/group-reservation':
             return MaterialPageRoute(
+                settings: settings,
                 builder: (_) => const GoBikeGroupReservationScreen());
           case '/service/gobike/customize':
             return MaterialPageRoute(
+                settings: settings,
                 builder: (_) => const GoBikeCustomizeScreen());
           case '/service/gobike/loading':
             return MaterialPageRoute(
@@ -145,7 +151,11 @@ class Go212App extends StatelessWidget {
             return MaterialPageRoute(
                 builder: (_) => const GoBikeMapSelectionScreen());
           case '/service/gobike/checkout':
-            final receptionMode = settings.arguments as String? ?? 'delivery';
+            // Args can be a Map (new pricing flow) or a plain String (legacy)
+            final _checkoutArgs = settings.arguments;
+            final receptionMode = _checkoutArgs is Map
+                ? (_checkoutArgs['deliveryMode'] as String? ?? 'delivery')
+                : (_checkoutArgs as String? ?? 'delivery');
             return MaterialPageRoute(
                 builder: (_) =>
                     GoBikeCheckoutScreen(receptionMode: receptionMode));
@@ -153,16 +163,31 @@ class Go212App extends StatelessWidget {
             return MaterialPageRoute(
                 builder: (_) => const GoBikeAddCardScreen());
           case '/service/gobike/success':
-            final receptionMode = settings.arguments as String? ?? 'delivery';
+            final _successArgs = settings.arguments;
+            final successReceptionMode = _successArgs is Map
+                ? (_successArgs['deliveryMode'] as String? ?? 'delivery')
+                : (_successArgs as String? ?? 'delivery');
             return MaterialPageRoute(
                 builder: (_) =>
-                    GoBikeSuccessScreen(receptionMode: receptionMode));
+                    GoBikeSuccessScreen(receptionMode: successReceptionMode));
           case '/service/gobike/tracking-connection':
             return MaterialPageRoute(
                 builder: (_) => const GoBikeTrackingConnectionScreen());
           case '/service/gobike/live-tracking':
             return MaterialPageRoute(
                 builder: (_) => const GoBikeLiveTrackingScreen());
+          case '/service/gobike/bike-map':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const GoBikeBikeMapScreen());
+          case '/service/gobike/bike-payment':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => GoBikeBikePaymentScreen(station: settings.arguments is BikeStation ? settings.arguments as BikeStation : null));
+          case '/service/gobike/active-ride':
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => GoBikeActiveRideScreen(station: settings.arguments is BikeStation ? settings.arguments as BikeStation : null));
           case '/service/gobike/review':
             return MaterialPageRoute(
                 builder: (_) => const GoBikeReviewScreen());

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'gobike_pricing_data.dart';
 
 class GoBikeCustomizeScreen extends StatefulWidget {
   const GoBikeCustomizeScreen({super.key});
@@ -23,6 +24,7 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
 
   final Color primaryGreen = const Color(0xFF009933);
   final Color bgColor = const Color(0xFFF6F7F8);
+  bool _isGroupe = false;
 
   // Quick select lists
   final List<DateTime> _quickDates = List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
@@ -79,12 +81,36 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ Single source of truth — no arg parsing, no re-computation
+    final pricing = GoBikePricingData.current;
+    _numBikes = pricing.bikeCount;
+    _isGroupe = pricing.isGroupe;
+    final stepLabel = _isGroupe ? '4 / 7' : '3 / 6';
+
+    return _buildScaffold(
+      context,
+      stepLabel,
+      pricing.durationIndex,
+      pricing.quantity,
+      pricing.durationTitle,
+      pricing.rentalTotal,
+    );
+  }
+
+  Widget _buildScaffold(
+    BuildContext context,
+    String stepLabel,
+    int durationIndex,
+    int quantity,
+    String durationTitle,
+    int realTotal,
+  ) {
     return Scaffold(
       backgroundColor: bgColor,
       body: Column(
         children: [
           // ─── HERO HEADER (COMPACT) ───
-          _buildHeroHeader(),
+          _buildHeroHeader(stepLabel: stepLabel),
 
           Expanded(
             child: SingleChildScrollView(
@@ -151,12 +177,18 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
                   const SizedBox(height: 16),
 
                   // ─── RECAP SECTION ───
-                  _buildMiniRecap(),
+                  _buildMiniRecap(quantity: quantity, durationTitle: durationTitle, realTotal: realTotal),
 
                   const SizedBox(height: 16),
 
                   // ─── FINAL BUTTON ───
-                  _buildFinalButton(),
+                  _buildFinalButton(
+                    durationIndex: durationIndex,
+                    quantity: quantity,
+                    durationTitle: durationTitle,
+                    realTotal: realTotal,
+                    bikeCount: _numBikes,
+                  ),
                   
                   const SizedBox(height: 24),
                 ],
@@ -168,111 +200,41 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
     );
   }
 
-  Widget _buildHeroHeader() {
+  Widget _buildHeroHeader({String stepLabel = '3 / 6'}) {
     return Container(
-      width: double.infinity,
+      padding: const EdgeInsets.only(top: 52, left: 20, right: 20, bottom: 18),
       decoration: const BoxDecoration(
-        color: Color(0xFF009933),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF065F46), Color(0xFF009933), Color(0xFF16A34A)],
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 44, 20, 16),
+          _buildTopIcon(Icons.arrow_back, onTap: () => Navigator.pop(context)),
+          const SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TOP BAR (ALIGNED NEXT TO BACK BUTTON)
-                Row(
-                  children: [
-                    _buildTopIcon(Icons.arrow_back, onTap: () => Navigator.pop(context)),
-                    const SizedBox(width: 12),
-                    Text(
-                      'GoBike',
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    _buildTopIcon(null, label: 'DH'),
-                  ],
+                Text(
+                  _isGroupe ? 'GoBike · Groupe' : 'GoBike',
+                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
                 ),
-                
-                const SizedBox(height: 24),
-                
-                // TITLES
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.55,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Personnalisez\nvotre GoRide',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          height: 1.1,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Choisissez la date et l\'heure de votre trajet',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 13,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 32),
-                
-                // PROGRESS BAR
-                Row(
-                  children: [
-                    const Icon(Icons.pedal_bike, color: Colors.white, size: 18),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Row(
-                        children: List.generate(6, (index) {
-                          return Expanded(
-                            child: Container(
-                              height: 5,
-                              margin: const EdgeInsets.only(right: 5),
-                              decoration: BoxDecoration(
-                                color: index <= 2 ? const Color(0xFFA3E635) : const Color(0xFF065F46),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '3 / 6',
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
+                Text('Personnalisez', style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
-          
-          // MASCOT
-          Positioned(
-            right: -5,
-            bottom: -5,
-            child: SizedBox(
-              width: 160,
-              child: Image.asset(
-                'assets/images/hero_header.png',
-                fit: BoxFit.contain,
-              ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
             ),
+            child: Text(stepLabel, style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -327,7 +289,11 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
                 child: Icon(icon, color: iconColor, size: 18),
               ),
               const SizedBox(width: 10),
-              Text(title, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold, color: const Color(0xFF1E293B))),
+              Flexible(
+                child: Text(title,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold, color: const Color(0xFF1E293B))),
+              ),
               const Spacer(),
               Icon(Icons.check_circle, color: primaryGreen, size: 18),
             ],
@@ -456,9 +422,11 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
     );
   }
 
-  Widget _buildMiniRecap() {
-    int total = _durationHours * _pricePerHour * _numBikes;
-    
+  Widget _buildMiniRecap({
+    required int quantity,
+    required String durationTitle,
+    required int realTotal,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -480,19 +448,19 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
                   children: [
                     const Icon(Icons.group_outlined, size: 13, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text('$_numBikes vélos', style: const TextStyle(fontSize: 11, color: Colors.black87)),
+                    Text('$_numBikes vélo${_numBikes > 1 ? "s" : ""}', style: const TextStyle(fontSize: 11, color: Colors.black87)),
                     const SizedBox(width: 6),
                     const Text('•', style: TextStyle(color: Colors.grey, fontSize: 10)),
                     const SizedBox(width: 6),
                     const Icon(Icons.access_time, size: 13, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text('$_durationHours h', style: const TextStyle(fontSize: 11, color: Colors.black87)),
-                    const SizedBox(width: 6),
-                    const Text('•', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                    const SizedBox(width: 6),
-                    Icon(Icons.sell_outlined, size: 12, color: primaryGreen),
-                    const SizedBox(width: 4),
-                    Text('$_pricePerHour DH/h', style: const TextStyle(fontSize: 11, color: Colors.black87)),
+                    Flexible(
+                      child: Text(
+                        durationTitle.isNotEmpty ? durationTitle : '$quantity unités',
+                        style: const TextStyle(fontSize: 11, color: Colors.black87),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -502,7 +470,7 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const Text('Total', style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
-              Text('$total DH', style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold, color: primaryGreen)),
+              Text('$realTotal DH', style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold, color: primaryGreen)),
             ],
           ),
         ],
@@ -510,9 +478,13 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
     );
   }
 
-  Widget _buildFinalButton() {
-    int total = _durationHours * _pricePerHour * _numBikes;
-    
+  Widget _buildFinalButton({
+    required int durationIndex,
+    required int quantity,
+    required String durationTitle,
+    required int realTotal,
+    required int bikeCount,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
@@ -520,7 +492,18 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
         height: 58,
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/service/gobike/loading');
+            // Pass ALL pricing args to the loading screen so they reach the checkout
+            Navigator.pushNamed(
+              context,
+              '/service/gobike/loading',
+              arguments: {
+                'durationIndex': durationIndex,
+                'quantity':      quantity,
+                'totalPrice':    realTotal,
+                'durationTitle': durationTitle,
+                'bikeCount':     bikeCount,
+              },
+            );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryGreen,
@@ -530,10 +513,10 @@ class _GoBikeCustomizeScreenState extends State<GoBikeCustomizeScreen> {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Spacer(flex: 3),
-              Text('Continuer • $total DH', style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
-              const Spacer(flex: 2),
+              Text('Continuer • $realTotal DH', style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 12),
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),

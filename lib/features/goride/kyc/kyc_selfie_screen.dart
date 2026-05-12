@@ -149,16 +149,14 @@ class _GoRideKycSelfieScreenState extends State<GoRideKycSelfieScreen>
                   border: Border.all(
                     color: hasSelfie
                         ? Go212Colors.primary400
-                        : Colors.white.withValues(
-                            alpha: 0.5 + _pulseAnim.value * 0.3),
+                        : Colors.white.withOpacity(0.5 + _pulseAnim.value * 0.3),
                     width: 3,
                   ),
                   boxShadow: hasSelfie
                       ? null
                       : [
                           BoxShadow(
-                            color: Go212Colors.primary400.withValues(
-                                alpha: _pulseAnim.value * 0.15),
+                            color: Go212Colors.primary400.withOpacity(_pulseAnim.value * 0.15),
                             blurRadius: 20 + _pulseAnim.value * 10,
                             spreadRadius: _pulseAnim.value * 4,
                           ),
@@ -184,7 +182,7 @@ class _GoRideKycSelfieScreenState extends State<GoRideKycSelfieScreen>
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Go212Colors.primary600.withValues(alpha: 0.45),
+                      color: Go212Colors.primary600.withOpacity(0.45),
                       blurRadius: 14,
                     )
                   ],
@@ -254,7 +252,7 @@ class _GoRideKycSelfieScreenState extends State<GoRideKycSelfieScreen>
                       : [
                           BoxShadow(
                             color:
-                                Go212Colors.primary600.withValues(alpha: 0.4),
+                                Go212Colors.primary600.withOpacity(0.4),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           )

@@ -210,12 +210,12 @@ class _GoRideDetailsScreenState extends State<GoRideDetailsScreen> {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: hasValue
-              ? color.withValues(alpha: 0.06)
+              ? color.withOpacity(0.06)
               : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: hasValue
-                ? color.withValues(alpha: 0.5)
+                ? color.withOpacity(0.5)
                 : const Color(0xFFE2E8F0),
             width: hasValue ? 2 : 1.5,
           ),
@@ -227,7 +227,7 @@ class _GoRideDetailsScreenState extends State<GoRideDetailsScreen> {
               height: 46,
               decoration: BoxDecoration(
                 color: hasValue
-                    ? color.withValues(alpha: 0.12)
+                    ? color.withOpacity(0.12)
                     : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(13),
               ),
@@ -401,12 +401,12 @@ class _CounterBtn extends StatelessWidget {
         height: 38,
         decoration: BoxDecoration(
           color:
-              disabled ? const Color(0xFFF1F5F9) : color.withValues(alpha: 0.1),
+              disabled ? const Color(0xFFF1F5F9) : color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
               color: disabled
                   ? const Color(0xFFE2E8F0)
-                  : color.withValues(alpha: 0.3)),
+                  : color.withOpacity(0.3)),
         ),
         child: Icon(icon,
             size: 18, color: disabled ? const Color(0xFFCBD5E1) : color),

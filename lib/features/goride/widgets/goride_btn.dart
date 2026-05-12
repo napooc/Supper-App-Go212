@@ -75,7 +75,7 @@ class _GoRideBtnState extends State<GoRideBtn>
                 ? null
                 : [
                     BoxShadow(
-                      color: const Color(0xFF16A34A).withValues(alpha: 0.35),
+                      color: const Color(0xFF16A34A).withOpacity(0.35),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     )

@@ -199,7 +199,7 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         decoration: BoxDecoration(
           color:
-              isSelected ? method.color.withValues(alpha: 0.06) : Colors.white,
+              isSelected ? method.color.withOpacity(0.06) : Colors.white,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isSelected ? method.color : const Color(0xFFE2E8F0),
@@ -208,13 +208,13 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                      color: method.color.withValues(alpha: 0.12),
+                      color: method.color.withOpacity(0.12),
                       blurRadius: 14,
                       offset: const Offset(0, 4))
                 ]
               : [
                   BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: Colors.black.withOpacity(0.03),
                       blurRadius: 6,
                       offset: const Offset(0, 2))
                 ],
@@ -226,8 +226,8 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
               height: 46,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? method.color.withValues(alpha: 0.12)
-                    : method.color.withValues(alpha: 0.07),
+                    ? method.color.withOpacity(0.12)
+                    : method.color.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(method.icon, size: 22, color: method.color),
@@ -250,7 +250,7 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
-                            color: method.color.withValues(alpha: 0.1),
+                            color: method.color.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(method.badge!,
@@ -324,9 +324,9 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: method.color.withValues(alpha: 0.05),
+        color: method.color.withOpacity(0.05),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: method.color.withValues(alpha: 0.2)),
+        border: Border.all(color: method.color.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -339,7 +339,7 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
                   : 'Vous recevrez les instructions de paiement après confirmation.',
               style: TextStyle(
                   fontSize: 12,
-                  color: method.color.withValues(alpha: 0.9),
+                  color: method.color.withOpacity(0.9),
                   height: 1.4),
             ),
           ),
@@ -352,9 +352,9 @@ class _GoRidePaymentScreenState extends State<GoRidePaymentScreen>
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: method.color.withValues(alpha: 0.04),
+        color: method.color.withOpacity(0.04),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: method.color.withValues(alpha: 0.2)),
+        border: Border.all(color: method.color.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
