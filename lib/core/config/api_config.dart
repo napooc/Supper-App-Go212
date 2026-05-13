@@ -2,7 +2,7 @@
 /// Toggle [_isProduction] to switch between dev IP and live HTTPS domain.
 class ApiConfig {
   // ── Environment ──────────────────────────────────────────────────────────
-  static const bool _isProduction = false; // ← flip to true before Play Store release
+  static const bool _isProduction = true; // ✅ Live — api.api-go212.online
 
   static const String _devBase  = 'http://62.84.177.120:3001';
   static const String _prodBase = 'https://api.api-go212.online';

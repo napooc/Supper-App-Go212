@@ -8,7 +8,7 @@ class GoBikePricingData {
   // ── Singleton ────────────────────────────────────────────────────────────
   static GoBikePricingData _current = const GoBikePricingData._empty();
   static GoBikePricingData get current => _current;
-
+  //
   /// Called by the duration screen when the user confirms a selection.
   static void set({
     required int durationIndex,
