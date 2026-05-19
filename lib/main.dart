@@ -94,7 +94,9 @@ class Go212App extends StatelessWidget {
             return MaterialPageRoute(
                 builder: (_) => const PhoneEntryScreen(isSignUp: false));
           case '/otp':
-            return MaterialPageRoute(builder: (_) => const OtpScreen());
+            return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const OtpScreen());
           case '/main':
             return MaterialPageRoute(builder: (_) => const MainShell());
           case '/service/gowash':

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/go212_colors.dart';
+import '../models/goride_kyc_data.dart';
 import '../widgets/kyc_progress_bar.dart';
 import '../widgets/goride_btn.dart';
 import '../widgets/goride_header.dart';
@@ -231,8 +232,10 @@ class _GoRideKycSelfieScreenState extends State<GoRideKycSelfieScreen>
           if (_selfieBytes != null && !_isCapturing)
             GoRideBtn(
               label: 'Valider et continuer',
-              onTap: () =>
-                  Navigator.pushNamed(context, '/goride/kyc/verify'),
+              onTap: () {
+                GoRideKycData.instance.selfieBytes = _selfieBytes;
+                Navigator.pushNamed(context, '/goride/kyc/verify');
+              },
               icon: Icons.arrow_forward_rounded,
             )
           else

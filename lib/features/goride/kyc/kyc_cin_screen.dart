@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/go212_colors.dart';
+import '../models/goride_kyc_data.dart';
 import '../widgets/kyc_progress_bar.dart';
 import '../widgets/goride_btn.dart';
 import '../widgets/goride_header.dart';
@@ -170,6 +171,7 @@ class _GoRideKycCinScreenState extends State<GoRideKycCinScreen>
         onTap: _isValid
             ? () {
                 if (_formKey.currentState?.validate() ?? false) {
+                  GoRideKycData.instance.cinNumber = _cinController.text.trim();
                   Navigator.pushNamed(context, '/goride/kyc/scan');
                 }
               }

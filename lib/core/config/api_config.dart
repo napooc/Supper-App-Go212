@@ -27,8 +27,13 @@ class ApiConfig {
   static String goWashBookingById(String id) => '$baseUrl/api/v1/gowash/booking/$id';
 
   // ── GoRide ───────────────────────────────────────────────────────────────
-  static String get goRideTrip    => '$baseUrl/api/v1/goride/trip';
-  static String get goRideDrivers => '$baseUrl/api/v1/goride/drivers';
+  static String get goRideMotos        => '$baseUrl/api/v1/goride/motos';
+  static String get goRideReservations => '$baseUrl/api/v1/goride/reservations';
+  static String get goRideKyc          => '$baseUrl/api/v1/goride/kyc';
+  static String get goRideKycStatus    => '$baseUrl/api/v1/goride/kyc/status';
+  static String get goRideReviews      => '$baseUrl/api/v1/goride/reviews';
+  static String goRideReservationById(String id) => '$baseUrl/api/v1/goride/reservations/$id';
+  static String goRideCancelReservation(String id) => '$baseUrl/api/v1/goride/reservations/$id/cancel';
 
   // ── Payments ─────────────────────────────────────────────────────────────
   static String get paymentIntent  => '$baseUrl/api/v1/payments/intent';

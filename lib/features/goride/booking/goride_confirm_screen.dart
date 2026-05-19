@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/go212_colors.dart';
+import '../../../core/services/goride_service.dart';
 import '../models/goride_booking_model.dart';
 import '../widgets/goride_btn.dart';
 
@@ -22,6 +24,9 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
 
   bool _showDemande = true;
   bool _showSuccess = false;
+  bool _showError = false;
+  String? _errorMessage;
+  String? _reservationId;
 
   @override
   void initState() {
@@ -44,19 +49,65 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
   }
 
   Future<void> _runSequence() async {
-    // Phase 1: "Demande en cours" for 3 seconds
-    await Future.delayed(const Duration(seconds: 3));
+    // ── Récupérer le booking depuis les arguments de navigation ──
+    await Future.delayed(const Duration(milliseconds: 100));
     if (!mounted) return;
 
-    // Phase 2: Show success
-    setState(() {
-      _showDemande = false;
-      _showSuccess = true;
-    });
-    _dotsCtrl.stop();
-    _checkCtrl.forward();
-    await Future.delayed(const Duration(milliseconds: 400));
-    _cardCtrl.forward();
+    final booking =
+        ModalRoute.of(context)?.settings.arguments as GoRideBooking? ??
+            const GoRideBooking();
+
+    // ── Appel RÉEL au backend GoRide ────────────────────────────
+    try {
+      final result = await GoRideService.instance.createReservation(
+        nbPersons: booking.persons,
+        durationType: booking.duration ?? 'jour',
+        durationQty: booking.durationQuantity,
+        startDate: booking.startDate?.toIso8601String().split('T').first ??
+            DateTime.now().toIso8601String().split('T').first,
+        startTime: booking.startTime,
+        numMotos: booking.numMotos,
+        deliveryType: booking.deliveryType ?? 'agence',
+        deliveryAddress: booking.deliveryAddress,
+        paymentMethod: booking.paymentMethod,
+      );
+
+      if (kDebugMode) debugPrint('📝 Reservation result: $result');
+
+      if (!mounted) return;
+
+      if (result['success'] == true) {
+        // ── Succès → sauvegarder l'ID et afficher la confirmation ──
+        final data = result['data'] as Map<String, dynamic>?;
+        _reservationId = data?['id'] as String?;
+        setState(() {
+          _showDemande = false;
+          _showSuccess = true;
+        });
+        _dotsCtrl.stop();
+        _checkCtrl.forward();
+        await Future.delayed(const Duration(milliseconds: 400));
+        _cardCtrl.forward();
+      } else {
+        // ── Erreur API → afficher le message ───────────────────
+        setState(() {
+          _showDemande = false;
+          _showError = true;
+          _errorMessage = result['message'] as String? ?? 'Erreur inconnue';
+        });
+        _dotsCtrl.stop();
+      }
+    } catch (e) {
+      // ── Erreur réseau → afficher fallback ────────────────────
+      if (!mounted) return;
+      if (kDebugMode) debugPrint('❌ Reservation error: $e');
+      setState(() {
+        _showDemande = false;
+        _showError = true;
+        _errorMessage = 'Impossible de joindre le serveur. Vérifiez votre connexion.';
+      });
+      _dotsCtrl.stop();
+    }
   }
 
   @override
@@ -85,8 +136,10 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
                     FadeTransition(opacity: anim, child: child),
                 child: _showDemande
                     ? _buildDemandeView(key: const ValueKey('demande'))
-                    : _buildSuccessView(booking,
-                        key: const ValueKey('success')),
+                    : _showError
+                        ? _buildErrorView(key: const ValueKey('error'))
+                        : _buildSuccessView(booking,
+                            key: const ValueKey('success')),
               ),
             ),
             if (_showSuccess) _buildFooter(context),
@@ -176,6 +229,80 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
           }),
         );
       },
+    );
+  }
+
+  Widget _buildErrorView({Key? key}) {
+    return Center(
+      key: key,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEE2E2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.error_outline_rounded,
+                  color: Color(0xFFEF4444), size: 52),
+            ),
+            const SizedBox(height: 28),
+            const Text(
+              'Réservation échouée',
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1E293B)),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _errorMessage ?? 'Une erreur est survenue',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 14, color: Go212Colors.neutral500, height: 1.5),
+            ),
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _showError = false;
+                  _showDemande = true;
+                });
+                _dotsCtrl.repeat();
+                _runSequence();
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF15803D), Color(0xFF22C55E)],
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Text('Réessayer',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Text('Retour',
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: Go212Colors.neutral500,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -328,7 +455,10 @@ class _GoRideConfirmScreenState extends State<GoRideConfirmScreen>
             onTap: () => Navigator.pushNamed(
               context,
               isLivraison ? '/goride/tracking' : '/goride/agence',
-              arguments: booking.copyWith(confirmed: true),
+              arguments: booking.copyWith(
+                confirmed: true,
+                reservationId: _reservationId,
+              ),
             ),
           ),
           const SizedBox(height: 10),

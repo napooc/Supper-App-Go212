@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/go212_colors.dart';
+import '../models/goride_kyc_data.dart';
 import '../widgets/kyc_progress_bar.dart';
 import '../widgets/goride_btn.dart';
 import '../widgets/goride_header.dart';
@@ -346,8 +347,11 @@ class _GoRideKycScanScreenState extends State<GoRideKycScanScreen> {
           if (_canContinue)
             GoRideBtn(
               label: 'Continuer',
-              onTap: () =>
-                  Navigator.pushNamed(context, '/goride/kyc/selfie'),
+              onTap: () {
+                GoRideKycData.instance.cinRectoBytes = _rectoBytes;
+                GoRideKycData.instance.cinVersoBytes = _versoBytes;
+                Navigator.pushNamed(context, '/goride/kyc/selfie');
+              },
               icon: Icons.arrow_forward_rounded,
             )
           else

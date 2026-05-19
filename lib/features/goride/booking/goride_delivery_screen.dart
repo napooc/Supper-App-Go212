@@ -16,6 +16,8 @@ class _GoRideDeliveryScreenState extends State<GoRideDeliveryScreen>
   String? _selected;
   late AnimationController _anim;
   late Animation<double> _fade;
+  final _addressCtrl = TextEditingController();
+  final _addressFocus = FocusNode();
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _GoRideDeliveryScreenState extends State<GoRideDeliveryScreen>
   @override
   void dispose() {
     _anim.dispose();
+    _addressCtrl.dispose();
+    _addressFocus.dispose();
     super.dispose();
   }
 
@@ -58,6 +62,62 @@ class _GoRideDeliveryScreenState extends State<GoRideDeliveryScreen>
                       badgeColor: const Color(0xFFF59E0B),
                       color: Go212Colors.primary600,
                     ),
+                    // ── Champ adresse si livraison sélectionnée ──
+                    if (_selected == 'livraison') ...[
+                      const SizedBox(height: 14),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0FDF4),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: Go212Colors.primary600.withOpacity(0.25)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.location_on_rounded, color: Go212Colors.primary600, size: 20),
+                                const SizedBox(width: 8),
+                                Text('Adresse de livraison',
+                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Go212Colors.primary600)),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            TextField(
+                              controller: _addressCtrl,
+                              focusNode: _addressFocus,
+                              decoration: InputDecoration(
+                                hintText: 'Ex: 23 Rue Mohammed V, Casablanca',
+                                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide(color: Go212Colors.primary600, width: 1.5),
+                                ),
+                                prefixIcon: Icon(Icons.home_rounded, color: Colors.grey[400]),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                              ),
+                              textInputAction: TextInputAction.done,
+                              onChanged: (_) => setState(() {}),
+                            ),
+                            const SizedBox(height: 6),
+                            Text('La moto sera livrée à cette adresse',
+                                style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 14),
                     _buildCard(
                       key: 'agence',
@@ -430,9 +490,12 @@ class _GoRideDeliveryScreenState extends State<GoRideDeliveryScreen>
       ),
       child: GoRideBtn(
         label: 'Continuer',
-        onTap: _selected != null
+        onTap: (_selected != null && (_selected != 'livraison' || _addressCtrl.text.trim().isNotEmpty))
             ? () {
-                final updated = booking.copyWith(deliveryType: _selected);
+                final updated = booking.copyWith(
+                  deliveryType: _selected,
+                  deliveryAddress: _selected == 'livraison' ? _addressCtrl.text.trim() : null,
+                );
                 if (_selected == 'agence') {
                   Navigator.pushNamed(context, '/goride/booking/agence',
                       arguments: updated);

@@ -6,8 +6,10 @@ class GoRideBooking {
   final String? startTime;
   final int numMotos;
   final String? deliveryType;
+  final String? deliveryAddress;
   final String? paymentMethod;
   final bool confirmed;
+  final String? reservationId;     // UUID du backend après confirmation
 
   const GoRideBooking({
     this.persons = 1,
@@ -17,8 +19,10 @@ class GoRideBooking {
     this.startTime,
     this.numMotos = 1,
     this.deliveryType,
+    this.deliveryAddress,
     this.paymentMethod,
     this.confirmed = false,
+    this.reservationId,
   });
 
   GoRideBooking copyWith({
@@ -29,8 +33,10 @@ class GoRideBooking {
     String? startTime,
     int? numMotos,
     String? deliveryType,
+    String? deliveryAddress,
     String? paymentMethod,
     bool? confirmed,
+    String? reservationId,
   }) {
     return GoRideBooking(
       persons: persons ?? this.persons,
@@ -40,8 +46,10 @@ class GoRideBooking {
       startTime: startTime ?? this.startTime,
       numMotos: numMotos ?? this.numMotos,
       deliveryType: deliveryType ?? this.deliveryType,
+      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       confirmed: confirmed ?? this.confirmed,
+      reservationId: reservationId ?? this.reservationId,
     );
   }
 

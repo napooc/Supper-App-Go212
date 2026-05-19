@@ -1,6 +1,9 @@
 // ignore_for_file: deprecated_member_use
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/go212_colors.dart';
+import '../../../core/services/goride_service.dart';
+import '../models/goride_booking_model.dart';
 import '../widgets/goride_header.dart';
 
 class GoRideReviewScreen extends StatefulWidget {
@@ -74,7 +77,28 @@ class _GoRideReviewScreenState extends State<GoRideReviewScreen>
       ));
       return;
     }
-    // Go directly to thank you page with video
+
+    // ── Envoi de l'avis au backend GoRide ──────────────────────
+    try {
+      final booking =
+          ModalRoute.of(context)?.settings.arguments as GoRideBooking?;
+      final selectedTags = _tags.toList();
+
+      final result = await GoRideService.instance.submitReview(
+        reservationId: booking?.reservationId,
+        note: _stars,
+        tags: selectedTags,
+        commentaire: _commentCtrl.text.trim().isEmpty
+            ? null
+            : _commentCtrl.text.trim(),
+      );
+
+      if (kDebugMode) debugPrint('⭐ Review result: $result');
+    } catch (e) {
+      if (kDebugMode) debugPrint('❌ Review error (non-blocking): $e');
+    }
+
+    if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(
         context, '/goride/thankyou', (r) => false);
   }

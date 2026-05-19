@@ -64,7 +64,7 @@ class Go212Theme {
             ),
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -145,7 +145,7 @@ class Go212Theme {
           ),
           behavior: SnackBarBehavior.floating,
         ),
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),

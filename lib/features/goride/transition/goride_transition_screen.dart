@@ -1,7 +1,10 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
+import '../../../core/services/goride_service.dart';
+import '../models/goride_kyc_data.dart';
 
 class GoRideTransitionScreen extends StatefulWidget {
   const GoRideTransitionScreen({super.key});
@@ -61,14 +64,50 @@ class _GoRideTransitionScreenState extends State<GoRideTransitionScreen>
   void _goToBooking() {
     if (_navigating) return;
     _navigating = true;
-    _fadeCtrl.forward().then((_) {
-      if (mounted) {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _fadeCtrl.forward().then((_) async {
+      if (!mounted) return;
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+      // ── Vérifier le statut KYC avant d'accéder au booking ──
+      // 1) Check local flag (user just completed KYC flow)
+      if (GoRideKycData.instance.kycPassed) {
+        if (kDebugMode) debugPrint('🧾 KYC: passé localement → booking');
         Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/goride/booking/persons',
+          context, '/goride/booking/persons',
           (route) => route.settings.name == '/main',
         );
+        return;
+      }
+      // 2) Check backend status
+      try {
+        final kyc = await GoRideService.instance.getKycStatus();
+        if (!mounted) return;
+
+        final status = kyc['data']?['statut'] ?? 'none';
+        if (kDebugMode) debugPrint('🧾 KYC status: $status');
+
+        if (status == 'approuve' || status == 'en_attente') {
+          // KYC soumis ou validé → booking
+          Navigator.pushNamedAndRemoveUntil(
+            context, '/goride/booking/persons',
+            (route) => route.settings.name == '/main',
+          );
+        } else {
+          // Pas de KYC → flow KYC
+          Navigator.pushNamedAndRemoveUntil(
+            context, '/goride/kyc/cin',
+            (route) => route.settings.name == '/main',
+          );
+        }
+      } catch (e) {
+        // En cas d'erreur réseau, laisser passer vers booking
+        if (kDebugMode) debugPrint('KYC check error: $e');
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context, '/goride/booking/persons',
+            (route) => route.settings.name == '/main',
+          );
+        }
       }
     });
   }

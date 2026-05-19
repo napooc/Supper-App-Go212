@@ -1,8 +1,12 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart' hide Path;
 import '../../../core/theme/go212_colors.dart';
+import '../../../core/services/tracking_service.dart';
 import '../models/goride_booking_model.dart';
 import '../widgets/goride_header.dart';
 
@@ -24,7 +28,15 @@ class _GoRideTrackingScreenState extends State<GoRideTrackingScreen>
   bool _showReturnPanel = false;
   DateTime _returnDate = DateTime.now().add(const Duration(days: 3));
 
-  final _rider = const _RiderInfo(
+  // ── Socket.io tracking ──────────────────────────────────
+  final _tracking = TrackingService.instance;
+  StreamSubscription<DriverLocation>? _locationSub;
+  StreamSubscription<DeliveryStatus>? _statusSub;
+  StreamSubscription<DriverInfo>? _driverInfoSub;
+  LatLng? _realDriverPos; // Position GPS réelle du driver
+  String? _reservationId;
+
+  _RiderInfo _rider = const _RiderInfo(
     name: 'Mohamed El Amrani',
     phone: '+212612345678',
     whatsapp: '+212612345678',
@@ -44,17 +56,25 @@ class _GoRideTrackingScreenState extends State<GoRideTrackingScreen>
           ..repeat();
     _motoPos = CurvedAnimation(parent: _motoCtrl, curve: Curves.easeInOut);
 
-    // Phase 0: Searching for a rider (6 seconds)
+    // ── Connexion Socket.io si on a un reservationId ──────────
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final booking =
+          ModalRoute.of(context)?.settings.arguments as GoRideBooking?;
+      _reservationId = booking?.id;
+      if (_reservationId != null && _reservationId!.isNotEmpty) {
+        _connectTracking(_reservationId!);
+      }
+    });
+
+    // ── Fallback : simulation si pas de Socket.io ─────────────
     Timer(const Duration(seconds: 6), () {
-      if (mounted) setState(() => _statusIndex = 1);
+      if (mounted && _statusIndex == 0) setState(() => _statusIndex = 1);
     });
-    // Phase 1: Rider found, preparation (4s more)
     Timer(const Duration(seconds: 10), () {
-      if (mounted) setState(() => _statusIndex = 2);
+      if (mounted && _statusIndex < 2) setState(() => _statusIndex = 2);
     });
-    // Phase 2: En route -> delivered after 20s
     Timer(const Duration(seconds: 30), () {
-      if (mounted)
+      if (mounted && _statusIndex < 3)
         setState(() {
           _statusIndex = 3;
           _etaMinutes = 0;
@@ -65,11 +85,59 @@ class _GoRideTrackingScreenState extends State<GoRideTrackingScreen>
     });
   }
 
+  void _connectTracking(String reservationId) {
+    _tracking.connect(reservationId);
+
+    // Recevoir la position GPS réelle du driver
+    _locationSub = _tracking.locationStream.listen((loc) {
+      if (mounted) {
+        setState(() {
+          _realDriverPos = LatLng(loc.lat, loc.lng);
+        });
+      }
+    });
+
+    // Recevoir les changements de statut du driver
+    _statusSub = _tracking.statusStream.listen((status) {
+      if (mounted) {
+        setState(() {
+          _statusIndex = status.stepIndex;
+          if (status.status == 'delivered') _etaMinutes = 0;
+          if (status.status == 'arrived') _etaMinutes = 0;
+          if (status.status == 'en_route') _etaMinutes = 15;
+        });
+      }
+    });
+
+    // Recevoir les infos du driver assigné
+    _driverInfoSub = _tracking.driverInfoStream.listen((info) {
+      if (mounted) {
+        setState(() {
+          _rider = _RiderInfo(
+            name: info.name,
+            phone: info.phone,
+            whatsapp: info.phone,
+            motoPlate: info.vehiclePlate,
+            rating: info.rating,
+            trips: info.totalDeliveries,
+          );
+          // Driver trouvé → avancer au statut 1
+          if (_statusIndex == 0) _statusIndex = 1;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
     _pulseCtrl.dispose();
     _motoCtrl.dispose();
     _etaTimer.cancel();
+    // Cleanup Socket.io
+    _locationSub?.cancel();
+    _statusSub?.cancel();
+    _driverInfoSub?.cancel();
+    _tracking.disconnect();
     super.dispose();
   }
 
@@ -327,7 +395,12 @@ class _GoRideTrackingScreenState extends State<GoRideTrackingScreen>
           child: Row(
             children: [
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/goride/review'),
+                onTap: () {
+                  final booking =
+                      ModalRoute.of(context)?.settings.arguments as GoRideBooking?;
+                  Navigator.pushNamed(context, '/goride/review',
+                      arguments: booking);
+                },
                 child: Container(
                   width: 40,
                   height: 40,
@@ -506,7 +579,36 @@ class _GoRideTrackingScreenState extends State<GoRideTrackingScreen>
   }
 
   // ─── Map area ─────────────────────────────────────────────────────
+  // ─── Real OpenStreetMap ───────────────────────────────────────────
+  // Route simulée : Départ agence → Client (Casablanca)
+  static const _routePoints = [
+    LatLng(33.5731, -7.5898), // Départ: Gare Casa-Voyageurs
+    LatLng(33.5745, -7.5920),
+    LatLng(33.5760, -7.5945),
+    LatLng(33.5775, -7.5970),
+    LatLng(33.5790, -7.5990),
+    LatLng(33.5810, -7.6010),
+    LatLng(33.5830, -7.6035),
+    LatLng(33.5850, -7.6055),
+    LatLng(33.5870, -7.6080),
+    LatLng(33.5885, -7.6100), // Arrivée: Quartier Maarif
+  ];
+
   Widget _buildMapArea() {
+    // Position du livreur : réelle (Socket.io) ou simulée (animation)
+    final LatLng riderPos;
+    if (_realDriverPos != null) {
+      riderPos = _realDriverPos!;
+    } else {
+      final t = _motoPos.value;
+      final idx = (t * (_routePoints.length - 1)).floor().clamp(0, _routePoints.length - 2);
+      final frac = (t * (_routePoints.length - 1)) - idx;
+      final lat = _routePoints[idx].latitude + (_routePoints[idx + 1].latitude - _routePoints[idx].latitude) * frac;
+      final lng = _routePoints[idx].longitude + (_routePoints[idx + 1].longitude - _routePoints[idx].longitude) * frac;
+      riderPos = LatLng(lat, lng);
+    }
+    final destPos = _routePoints.last;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -522,92 +624,125 @@ class _GoRideTrackingScreenState extends State<GoRideTrackingScreen>
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           children: [
-            CustomPaint(
-              size: const Size(double.infinity, double.infinity),
-              painter: _LightMapPainter(),
-            ),
+            // ── Carte OpenStreetMap ──
             AnimatedBuilder(
               animation: _motoPos,
-              builder: (_, __) {
-                return LayoutBuilder(builder: (ctx, constraints) {
-                  final w = constraints.maxWidth;
-                  final h = constraints.maxHeight;
-                  final t = _motoPos.value;
-                  final x = w * 0.1 + (w * 0.6) * t;
-                  final y = h * 0.68 - math.sin(t * math.pi) * h * 0.32;
-                  return Positioned(
-                    left: x - 20,
-                    top: y - 20,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Go212Colors.primary600,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Go212Colors.primary600.withOpacity(0.45),
-                              blurRadius: 14,
-                              spreadRadius: 2),
-                        ],
-                      ),
-                      child: const GoRideMotoIcon(size: 26),
-                    ),
-                  );
-                });
-              },
-            ),
-            Positioned(
-              right: 42,
-              top: 28,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.12),
-                            blurRadius: 8)
-                      ],
-                    ),
-                    child: const Text('Vous',
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A))),
+              builder: (_, __) => FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(
+                    (riderPos.latitude + destPos.latitude) / 2,
+                    (riderPos.longitude + destPos.longitude) / 2,
                   ),
-                  const SizedBox(height: 3),
-                  const Icon(Icons.location_pin,
-                      color: Color(0xFFEF4444), size: 28),
+                  initialZoom: 14.0,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                  ),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.go212.app',
+                  ),
+                  // ── Route tracée ──
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: _routePoints,
+                        strokeWidth: 3.0,
+                        color: Go212Colors.primary600.withOpacity(0.3),
+                      ),
+                      // Partie parcourue (plein)
+                      Polyline(
+                        points: _routePoints.sublist(0, idx + 1) + [riderPos],
+                        strokeWidth: 4.5,
+                        color: Go212Colors.primary600,
+                      ),
+                    ],
+                  ),
+                  // ── Marqueurs ──
+                  MarkerLayer(
+                    markers: [
+                      // Livreur (moto)
+                      Marker(
+                        point: riderPos,
+                        width: 44,
+                        height: 44,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Go212Colors.primary600,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Go212Colors.primary600.withOpacity(0.45),
+                                  blurRadius: 14,
+                                  spreadRadius: 2),
+                            ],
+                          ),
+                          child: const GoRideMotoIcon(size: 26),
+                        ),
+                      ),
+                      // Destination (client)
+                      Marker(
+                        point: destPos,
+                        width: 40,
+                        height: 50,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 6)
+                                ],
+                              ),
+                              child: const Text('Vous',
+                                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+                            ),
+                            const Icon(Icons.location_pin, color: Color(0xFFEF4444), size: 26),
+                          ],
+                        ),
+                      ),
+                      // Départ (agence)
+                      Marker(
+                        point: _routePoints.first,
+                        width: 32,
+                        height: 32,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Go212Colors.primary600, width: 2),
+                          ),
+                          child: Icon(Icons.store_rounded, color: Go212Colors.primary600, size: 16),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
+            // ── ETA overlay ──
             Positioned(
               bottom: 12,
               left: 0,
               right: 0,
               child: Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.12), blurRadius: 12)
+                      BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 12)
                     ],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.access_time_rounded,
-                          color: Go212Colors.primary600, size: 15),
+                      Icon(Icons.access_time_rounded, color: Go212Colors.primary600, size: 15),
                       const SizedBox(width: 6),
                       Text(
                         _etaMinutes > 0
@@ -1114,7 +1249,7 @@ class _LightMapPainter extends CustomPainter {
     }
 
     // Route line (path from rider to client)
-    final routePath = Path()
+    final routePath = ui.Path()
       ..moveTo(size.width * 0.08, size.height * 0.75)
       ..cubicTo(size.width * 0.22, size.height * 0.50, size.width * 0.42,
           size.height * 0.50, size.width * 0.55, size.height * 0.25)
